@@ -10,32 +10,35 @@ def printing(arr):
             print(arr[i][j], end=" ")
         print()
 
-def compare(grid, comparator, case, row, col):
+def compare(grid, comparator, case, row, col, num):
+  if grid[row][col] == 0:
+    return True
+  
   if comparator == ">":
     if case == 0:
-      if grid[row][col] > grid[row-1][col]:
+      if num > grid[row-1][col]:
         return True
     elif case == 1:
-      if grid[row][col] > grid[row][col+1]:
+      if num > grid[row][col+1]:
         return True
     elif case == 2:
-      if grid[row][col] > grid[row+1][col]:
+      if num > grid[row+1][col]:
         return True
     elif case == 3:
-      if grid[row][col] > grid[row][col-1]:
+      if num > grid[row][col-1]:
         return True
   else:
     if case == 0:
-      if grid[row][col] < grid[row-1][col]:
+      if num < grid[row-1][col]:
         return True
     elif case == 1:
-      if grid[row][col] < grid[row][col+1]:
+      if num < grid[row][col+1]:
         return True
     elif case == 2:
-      if grid[row][col] < grid[row+1][col]:
+      if num < grid[row+1][col]:
         return True
     elif case == 3:
-      if grid[row][col] < grid[row][col-1]:
+      if num < grid[row][col-1]:
         return True
   return False
 
@@ -48,7 +51,7 @@ def isSafe(grid, row, col, num, comparatorsGrid):
     comparators = comparatorsGrid[row][col]
     for i in range(4):
       if comparators[i] != "":
-        if not compare(grid, comparators[i], i, row, col):
+        if not compare(grid, comparators[i], i, row, col, num):
           return False
     
     # Check if we find the same num
@@ -82,7 +85,6 @@ def isSafe(grid, row, col, num, comparatorsGrid):
 
 
 def solveSudoku(comparatorsGrid, grid, row, col):
-
     # Check if we have reached the 8th
     # row and 9th column (0
     # indexed matrix) , we are
