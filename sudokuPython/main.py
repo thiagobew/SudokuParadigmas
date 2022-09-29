@@ -1,6 +1,6 @@
 # N is the size of the 2D matrix   N*N
-N = 4
-nSqrt = 2
+N = 9
+nSqrt = 3
 # A utility function to print grid
 
 
@@ -133,20 +133,21 @@ def solveSudoku(comparatorsGrid, grid, row, col):
 
 # Driver Code
 def getGridFromString(string):
-  grid = [None] * N
+  grid = [[None] * N] * N
   for i in range(len(string)):
-    row = i // 4
-    if grid[row] == None:
-      grid[row] = []
+    row = i // 4 // N
+    column = i // 4 % N
+    if grid[row][column] == None:
+      grid[row][column] = []
 
     if string[i] == ".": 
-      grid[row].append("")
+      grid[row][column].append("")
     else:
-      grid[row].append(string[i])
+      grid[row][column].append(string[i])
   
   print(grid)
   return grid
-    
+
 # 0 means unassigned cells
 grid = [0] * N
 for i in range(N):
@@ -158,8 +159,22 @@ comparatorsGridSize4 = [[["", "<", "<", ""], ["", "", "<", ">"], ["", ">", ">", 
                         [["", "<", ">", ""], ["", "", ">", ">"], ["", ">", "<", ""], ["", "", "<", "<"]], 
                         [["<", ">", "", ""], ["<", "", "", "<"], [">", "<", "", ""], [">", "", "", ">"]]]
 
+linha1 = ".<>.|.><>|..<<|.<>.|.<>>|..>>|.><.|.>>.|..<<"
+linha2 = "<<<.|><<>|>.<>|<<<.|<>>>|>.><|>>>.|<<>>|>.>>"
+linha3 = "><..|><.<|>..<|><..|<>.>|<..<|<>..|<<.<|<..>"
+linha4 = ".>>.|.><<|..<<|.>>.|.<><|..>>|.<<.|.>>>|..<<"
+linha5 = "<>>.|><<<|>.<>|<><.|<<<<|<.>>|>>>.|<>><|>.><"
+linha6 = "<<..|>>.>|>..<|><..|>>.>|<..<|<>..|<<.<|<..>"
+linha7 = ".<>.|.>>>|..><|.><.|.>><|..><|.<<.|.><>|..<<"
+linha8 = "<><.|<<<<|<.>>|>>>.|<<><|<.<>|><>.|><<>|>.>>"
+linha9 = "><..|>>.>|<..<|<<..|<<.>|>..>|<<..|>>.>|<..<"
 
-if (solveSudoku(comparatorsGridSize4, grid, 0, 0)):
+gridString = linha1 + linha2 + linha3 + linha4+ linha5 + linha6 + linha7 + linha8 + linha9
+# gridList = getGridFromString2(gridString)
+gridString = gridString.replace("|", "")
+gridList = getGridFromString(gridString)
+
+if (solveSudoku(gridList, grid, 0, 0)):
     printing(grid)
 else:
     print("no solution  exists ")
