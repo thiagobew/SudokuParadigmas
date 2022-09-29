@@ -132,8 +132,21 @@ def solveSudoku(comparatorsGrid, grid, row, col):
     return False
 
 # Driver Code
+def getGridFromString(string):
+  grid = [None] * N
+  for i in range(len(string)):
+    row = i // 4
+    if grid[row] == None:
+      grid[row] = []
 
-
+    if string[i] == ".": 
+      grid[row].append("")
+    else:
+      grid[row].append(string[i])
+  
+  print(grid)
+  return grid
+    
 # 0 means unassigned cells
 grid = [0] * N
 for i in range(N):
@@ -144,6 +157,8 @@ comparatorsGridSize4 = [[["", "<", "<", ""], ["", "", "<", ">"], ["", ">", ">", 
                         [[">", ">", "", ""], [">", "", "", "<"], ["<", "<", "", ""], ["<", "", "", ">"]], 
                         [["", "<", ">", ""], ["", "", ">", ">"], ["", ">", "<", ""], ["", "", "<", "<"]], 
                         [["<", ">", "", ""], ["<", "", "", "<"], [">", "<", "", ""], [">", "", "", ">"]]]
+
+comparatorsStringSize9 = ".<>..><>.<<.<>..<>>..>>.><..>><..<<<<<.<<<>>.<><<<.<>>><.><>>>.<<><>.>>"
 
 if (solveSudoku(comparatorsGridSize4, grid, 0, 0)):
     printing(grid)
