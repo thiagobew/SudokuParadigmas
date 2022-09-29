@@ -1,5 +1,5 @@
 # N is the size of the 2D matrix   N*N
-from time import sleep, time
+from time import time
 from typing import List
 
 
@@ -8,46 +8,55 @@ nSqrt = 3
 # A utility function to print grid
 
 
-def printing(arr):
-    for i in range(N):
-        for j in range(N):
-            print(arr[i][j], end=" ")
+def printGrid(grid: List[List[int]]) -> None:
+    """
+    Makes a good print of the grid
+    """
+    for row in range(N):
+        for column in range(N):
+            print(grid[row][column], end=" ")
         print()
 
 
-def getPossibleOptions(grid, row, col, comparatorsGrid):
+def getPossibleOptions(grid: List[List[int]], row: int, col: int, comparatorsGrid: List[List[List[str]]]) -> List[int]:
+    """
+    Retorna todos os valores que podem ir em uma posição específica do grid
+    """
     options = []
     for num in range(1, N + 1):
-        if isSafe(grid, row, col, num, comparatorsGrid):
+        if canPutValue(grid, row, col, num, comparatorsGrid):
             options.append(num)
     return options
 
 
-def compare(grid, comparator, case, row, col, num):
+def executeComparison(grid: List[List[int]], comparator: str, operatorType: int, row: int, col: int, num: int) -> bool:
+    """
+    Recebe uma posição do grid junto com um operador em formato de string e retorna o resultado da comparação
+    """
     if comparator == ">":
-        if case == 0:
+        if operatorType == 0:
             if num > grid[row-1][col] or grid[row-1][col] == 0:
                 return True
-        elif case == 1:
+        elif operatorType == 1:
             if num > grid[row][col+1] or grid[row][col+1] == 0:
                 return True
-        elif case == 2:
+        elif operatorType == 2:
             if num > grid[row+1][col] or grid[row+1][col] == 0:
                 return True
-        elif case == 3:
+        elif operatorType == 3:
             if num > grid[row][col-1] or grid[row][col-1] == 0:
                 return True
     else:
-        if case == 0:
+        if operatorType == 0:
             if num < grid[row-1][col] or grid[row-1][col] == 0:
                 return True
-        elif case == 1:
+        elif operatorType == 1:
             if num < grid[row][col+1] or grid[row][col+1] == 0:
                 return True
-        elif case == 2:
+        elif operatorType == 2:
             if num < grid[row+1][col] or grid[row+1][col] == 0:
                 return True
-        elif case == 3:
+        elif operatorType == 3:
             if num < grid[row][col-1] or grid[row][col-1] == 0:
                 return True
     return False
@@ -57,91 +66,76 @@ def compare(grid, comparator, case, row, col, num):
 # given row, col
 
 
-def isSafe(grid, row, col, num, comparatorsGrid):
-
-    # Checking for comparators
+def canPutValue(grid: List[List[int]], row: int, col: int, num: int, comparatorsGrid: List[List[List[str]]]) -> bool:
+    """
+    Verifica se um número pode ser colocado em uma posição sem quebrar as regras do jogo
+    """
+    # Checa se obedece os operadores
     comparators = comparatorsGrid[row][col]
-    for i in range(4):
-        if comparators[i] != "":
-            if not compare(grid, comparators[i], i, row, col, num):
+    for operatorType in range(4):
+        if comparators[operatorType] != "":
+            if not executeComparison(grid, comparators[operatorType], operatorType, row, col, num):
                 return False
 
-    # Check if we find the same num
-    # in the similar row , we
-    # return false
-    # Check if we find the same num in
-    # the similar column , we
-    # return false
+    # Verifica se o número já não aparece na mesma coluna ou linha em outra posição
     for x in range(N):
         if grid[row][x] == num:
             return False
         if grid[x][col] == num:
             return False
 
-    # Check if we find the same num in
-    # the particular 3*3 matrix,
-    # we return false
+    # Verifica se o número não está na sub região específica do tabuleiro
     startRow = row - row % nSqrt
     startCol = col - col % nSqrt
-    for i in range(nSqrt):
+    for operatorType in range(nSqrt):
         for j in range(nSqrt):
-            if grid[i + startRow][j + startCol] == num:
+            if grid[operatorType + startRow][j + startCol] == num:
                 return False
     return True
 
-# Takes a partially filled-in grid and attempts
-# to assign values to all unassigned locations in
-# such a way to meet the requirements for
-# Sudoku solution (non-duplication across rows,
-# columns, and boxes) */
-
 
 def solveSudoku(comparatorsGrid: List[List[List[str]]], grid: List[List], row: int, col: int) -> bool:
-    # Check if we have reached the 8th
-    # row and 9th column (0
-    # indexed matrix) , we are
-    # returning true to avoid
-    # further backtracking
+    """ Takes a partially filled-in grid and attempts
+    to assign values to all unassigned locations in
+    such a way to meet the requirements for
+    Sudoku solution (non-duplication across rows,
+    columns, and boxes) */
+    """
+    # Verifica se chegou na ultima célula
     if (row == N - 1 and col == N):
         return True
 
-    # Check if column value  becomes 9 ,
-    # we move to next row and
-    # column start from 0
+    # Verifica se o valor de col chegou em N, o que significa que teremos que trocar de linha
     if col == N:
         row += 1
         col = 0
 
-    # Check if the current position of
-    # the grid already contains
-    # value >0, we iterate for next column
+    # Verifica se a posição atual já foi definida anteriormente, se foi passa para o próximo
     if grid[row][col] > 0:
         return solveSudoku(comparatorsGrid, grid, row, col + 1)
 
-    for num in getPossibleOptions(grid, row, col, comparatorsGrid):
-        # Assigning the num in
-        # the current (row,col)
-        # position of the grid
-        # and assuming our assigned
-        # num in the position
-        # is correct
+    # Pega todos os valores que podem ser colocados nessa célula sem quebrar as regras do jogo
+    possibleValues = getPossibleOptions(grid, row, col, comparatorsGrid)
+    for num in possibleValues:
+        # Coloca o num na posição que está sendo processada e toma como verdade que está correto
         grid[row][col] = num
 
-        # Checking for next possibility with next
-        # column
+        # Passa para processar próxima célula da grid
         if solveSudoku(comparatorsGrid, grid, row, col + 1):
             return True
 
-        # Removing the assigned num ,
-        # since our assumption
-        # was wrong , and we go for
-        # next assumption with
-        # diff num value
+        # Caso chegue aqui é porque posteriormente não foi encontrado solução com o num nessa posição, colocamos como 0 novamente
+        # e passamos para o próximo valor possível
         grid[row][col] = 0
+
+    # Caso chegue aqui é pq alguma célula testou todos os valores e nenhum atende aos requisitos
     return False
 
 
 def getOperatorsGridFromString(text: str) -> List[List[List]]:
+    """ Transforma uma grid de operators em uma Lista de Listas de Listas de chars
+    seguindo um padrão pre estabelecido para fazer input dos valores 
+    """
     emptyRow = [None for _ in range(N)]
     grid = [emptyRow.copy() for _ in range(N)]
     operators = text.split('|')
@@ -172,23 +166,23 @@ comparatorsGridSize4 = [[["", "<", "<", ""], ["", "", "<", ">"], ["", ">", ">", 
                             "", ">", "<", ""], ["", "", "<", "<"]],
                         [["<", ">", "", ""], ["<", "", "", "<"], [">", "<", "", ""], [">", "", "", ">"]]]
 
-linha1 = ".<>.|.><>|..<<|.<>.|.<>>|..>>|.><.|.>><|..<<|"
-linha2 = "<<<.|><<>|>.<>|<<<.|<>>>|<.><|>>>.|<<><|>.>>|"
-linha3 = "><..|><.>|>..>|><..|<>.>|<..<|<>..|<<.<|<..>|"
-linha4 = ".>>.|.><<|..<<|.>>.|.<><|..>>|.<<.|.>>>|..<<|"
-linha5 = "<>>.|><<<|>.<>|<><.|<<<<|<.>>|>>>.|<>><|>.><|"
-linha6 = "<<..|>>.>|>..<|><..|>>.>|<..<|<>..|<<.<|<..>|"
-linha7 = ".<>.|.>>>|..><|.><.|.>><|..><|.<<.|.><>|..<<|"
-linha8 = "<><.|<<<<|<.>>|>>>.|<<><|<.<>|><>.|><<>|>.>>|"
-linha9 = "><..|>>.>|<..<|<<..|<<.>|>..>|<<..|>>.>|<..<"
+row1 = ".<>.|.><>|..<<|.<>.|.<>>|..>>|.><.|.>><|..<<|"
+row2 = "<<<.|><<>|>.<>|<<<.|<>>>|<.><|>>>.|<<><|>.>>|"
+row3 = "><..|><.>|>..>|><..|<>.>|<..<|<>..|<<.<|<..>|"
+row4 = ".>>.|.><<|..<<|.>>.|.<><|..>>|.<<.|.>>>|..<<|"
+row5 = "<>>.|><<<|>.<>|<><.|<<<<|<.>>|>>>.|<>><|>.><|"
+row6 = "<<..|>>.>|>..<|><..|>>.>|<..<|<>..|<<.<|<..>|"
+row7 = ".<>.|.>>>|..><|.><.|.>><|..><|.<<.|.><>|..<<|"
+row8 = "<><.|<<<<|<.>>|>>>.|<<><|<.<>|><>.|><<>|>.>>|"
+row9 = "><..|>>.>|<..<|<<..|<<.>|>..>|<<..|>>.>|<..<"
 board99ComparatorsGrid = getOperatorsGridFromString(
-    linha1 + linha2 + linha3 + linha4 + linha5 + linha6 + linha7 + linha8 + linha9)
+    row1 + row2 + row3 + row4 + row5 + row6 + row7 + row8 + row9)
 
 start = time()
 if (solveSudoku(board99ComparatorsGrid, grid, 0, 0)):
-    printing(grid)
+    printGrid(grid)
 else:
     print("no solution  exists ")
 fim = time()
-print(fim - start)
+print(f'Execution time: {fim - start}')
 # This code is contributed by sudhanshgupta2019a
