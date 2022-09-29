@@ -11,34 +11,31 @@ def printing(arr):
         print()
 
 def compare(grid, comparator, case, row, col, num):
-  if grid[row][col] == 0:
-    return True
-  
   if comparator == ">":
     if case == 0:
-      if num > grid[row-1][col]:
+      if num > grid[row-1][col] or grid[row-1][col] == 0:
         return True
     elif case == 1:
-      if num > grid[row][col+1]:
+      if num > grid[row][col+1] or grid[row][col+1] == 0:
         return True
     elif case == 2:
-      if num > grid[row+1][col]:
+      if num > grid[row+1][col] or grid[row+1][col] == 0:
         return True
     elif case == 3:
-      if num > grid[row][col-1]:
+      if num > grid[row][col-1] or grid[row][col-1] == 0:
         return True
   else:
     if case == 0:
-      if num < grid[row-1][col]:
+      if num < grid[row-1][col] or grid[row-1][col] == 0:
         return True
     elif case == 1:
-      if num < grid[row][col+1]:
+      if num < grid[row][col+1] or grid[row][col+1] == 0:
         return True
     elif case == 2:
-      if num < grid[row+1][col]:
+      if num < grid[row+1][col] or grid[row+1][col] == 0:
         return True
     elif case == 3:
-      if num < grid[row][col-1]:
+      if num < grid[row][col-1] or grid[row][col-1] == 0:
         return True
   return False
 
