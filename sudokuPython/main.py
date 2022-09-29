@@ -133,31 +133,12 @@ def solveSudoku(comparatorsGrid, grid, row, col):
 
 # Driver Code
 def getGridFromString(string):
-  grid = [None] * N
+  grid = [[None] * N] * N
   for i in range(len(string)):
-    print(grid)
-    row = i // 4 
-    column = i % N
-    if grid[row] == None:
-      grid[row] = [[]]
-
-    if string[i] == ".": 
-      grid[row][column].append("")
-    else:
-      grid[row][column].append(string[i])
-  
-  print(grid)
-  return grid
-
-# Driver Code
-def getGridFromString(string):
-  grid = [None] * N
-  for i in range(len(string)):
-    print(grid)
     row = i // 4 // N
-    column = i % N
-    if grid[row] == None:
-      grid[row] = [[]]
+    column = i // 4 % N
+    if grid[row][column] == None:
+      grid[row][column] = []
 
     if string[i] == ".": 
       grid[row][column].append("")
@@ -167,26 +148,6 @@ def getGridFromString(string):
   print(grid)
   return grid
 
-# Driver Code
-def getGridFromString2(rows: str):
-  operators = rows.split()
-
-  grid = [None] * N
-  for i in range(len(string)):
-    print(grid)
-    row = i // 4 
-    column = i % N
-    if grid[row] == None:
-      grid[row] = [[]]
-
-    if string[i] == ".": 
-      grid[row][column].append("")
-    else:
-      grid[row][column].append(string[i])
-  
-  print(grid)
-  return grid
-    
 # 0 means unassigned cells
 grid = [0] * N
 for i in range(N):
@@ -211,7 +172,6 @@ linha9 = "><..|>>.>|<..<|<<..|<<.>|>..>|<<..|>>.>|<..<"
 gridString = linha1 + linha2 + linha3 + linha4+ linha5 + linha6 + linha7 + linha8 + linha9
 # gridList = getGridFromString2(gridString)
 gridString = gridString.replace("|", "")
-print(len(gridString))
 gridList = getGridFromString(gridString)
 
 if (solveSudoku(gridList, grid, 0, 0)):
