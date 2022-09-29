@@ -137,56 +137,14 @@ def solveSudoku(comparatorsGrid, grid, row, col):
         grid[row][col] = 0
     return False
 
-# Driver Code
 
-
-def getGridFromString(string):
-    grid = [None] * N
-    for i in range(len(string)):
-        print(grid)
-        row = i // 4
-        column = i % N
-        if grid[row] == None:
-            grid[row] = [[]]
-
-        if string[i] == ".":
-            grid[row][column].append("")
-        else:
-            grid[row][column].append(string[i])
-
-    print(grid)
-    return grid
-
-# Driver Code
-
-
-def getGridFromString(string):
-    grid = [None] * N
-    for i in range(len(string)):
-        print(grid)
-        row = i // 4 // N
-        column = i % N
-        if grid[row] == None:
-            grid[row] = [[]]
-
-        if string[i] == ".":
-            grid[row][column].append("")
-        else:
-            grid[row][column].append(string[i])
-
-    print(grid)
-    return grid
-
-
-def getGridFromString2(rows: str) -> List[List]:
+def getOperatorsGridFromString(text: str) -> List[List[List]]:
     emptyRow = [None for _ in range(N)]
     grid = [emptyRow.copy() for _ in range(N)]
-    operators = rows.split('|')
-    print('Operators')
-    print(operators)
+    operators = text.split('|')
     for row in range(N):
         for column in range(N):
-            index = row + column
+            index = row * N + column
             cell = []
             for operatorChar in operators[index]:
                 if operatorChar == '.':
@@ -194,9 +152,8 @@ def getGridFromString2(rows: str) -> List[List]:
                 else:
                     cell.append(operatorChar)
 
-                    grid[row][column] = cell
-
-        return grid
+            grid[row][column] = cell
+    return grid
 
 
 # 0 means unassigned cells
@@ -212,23 +169,20 @@ comparatorsGridSize4 = [[["", "<", "<", ""], ["", "", "<", ">"], ["", ">", ">", 
                             "", ">", "<", ""], ["", "", "<", "<"]],
                         [["<", ">", "", ""], ["<", "", "", "<"], [">", "<", "", ""], [">", "", "", ">"]]]
 
-linha1 = ".<>.|.><>|..<<|.<>.|.<>>|..>>|.><.|.>>.|..<<"
-linha2 = "<<<.|><<>|>.<>|<<<.|<>>>|>.><|>>>.|<<>>|>.>>"
-linha3 = "><..|><.<|>..<|><..|<>.>|<..<|<>..|<<.<|<..>"
-linha4 = ".>>.|.><<|..<<|.>>.|.<><|..>>|.<<.|.>>>|..<<"
-linha5 = "<>>.|><<<|>.<>|<><.|<<<<|<.>>|>>>.|<>><|>.><"
-linha6 = "<<..|>>.>|>..<|><..|>>.>|<..<|<>..|<<.<|<..>"
-linha7 = ".<>.|.>>>|..><|.><.|.>><|..><|.<<.|.><>|..<<"
-linha8 = "<><.|<<<<|<.>>|>>>.|<<><|<.<>|><>.|><<>|>.>>"
+linha1 = ".<>.|.><>|..<<|.<>.|.<>>|..>>|.><.|.>>.|..<<|"
+linha2 = "<<<.|><<>|>.<>|<<<.|<>>>|>.><|>>>.|<<>>|>.>>|"
+linha3 = "><..|><.<|>..<|><..|<>.>|<..<|<>..|<<.<|<..>|"
+linha4 = ".>>.|.><<|..<<|.>>.|.<><|..>>|.<<.|.>>>|..<<|"
+linha5 = "<>>.|><<<|>.<>|<><.|<<<<|<.>>|>>>.|<>><|>.><|"
+linha6 = "<<..|>>.>|>..<|><..|>>.>|<..<|<>..|<<.<|<..>|"
+linha7 = ".<>.|.>>>|..><|.><.|.>><|..><|.<<.|.><>|..<<|"
+linha8 = "<><.|<<<<|<.>>|>>>.|<<><|<.<>|><>.|><<>|>.>>|"
 linha9 = "><..|>>.>|<..<|<<..|<<.>|>..>|<<..|>>.>|<..<"
+board99ComparatorsGrid = getOperatorsGridFromString(
+    linha1 + linha2 + linha3 + linha4 + linha5 + linha6 + linha7 + linha8 + linha9)
 
 
-gridString = linha1 + linha2 + linha3 + linha4 + linha5 + linha6 + linha7 + linha8 + linha9
-gridList = getGridFromString2(gridString)
-print(gridList)
-
-
-if (solveSudoku(gridList, grid, 0, 0)):
+if (solveSudoku(board99ComparatorsGrid, grid, 0, 0)):
     printing(grid)
 else:
     print("no solution  exists ")
