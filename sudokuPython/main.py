@@ -1,4 +1,5 @@
 # N is the size of the 2D matrix   N*N
+from time import sleep, time
 from typing import List
 
 
@@ -20,6 +21,7 @@ def getPossibleOptions(grid, row, col, comparatorsGrid):
         if isSafe(grid, row, col, num, comparatorsGrid):
             options.append(num)
     return options
+
 
 def compare(grid, comparator, case, row, col, num):
     if comparator == ">":
@@ -94,7 +96,7 @@ def isSafe(grid, row, col, num, comparatorsGrid):
 # columns, and boxes) */
 
 
-def solveSudoku(comparatorsGrid, grid, row, col):
+def solveSudoku(comparatorsGrid: List[List[List[str]]], grid: List[List], row: int, col: int) -> bool:
     # Check if we have reached the 8th
     # row and 9th column (0
     # indexed matrix) , we are
@@ -117,25 +119,25 @@ def solveSudoku(comparatorsGrid, grid, row, col):
         return solveSudoku(comparatorsGrid, grid, row, col + 1)
 
     for num in getPossibleOptions(grid, row, col, comparatorsGrid):
-            # Assigning the num in
-            # the current (row,col)
-            # position of the grid
-            # and assuming our assigned
-            # num in the position
-            # is correct
-            grid[row][col] = num
+        # Assigning the num in
+        # the current (row,col)
+        # position of the grid
+        # and assuming our assigned
+        # num in the position
+        # is correct
+        grid[row][col] = num
 
-            # Checking for next possibility with next
-            # column
-            if solveSudoku(comparatorsGrid, grid, row, col + 1):
-                return True
+        # Checking for next possibility with next
+        # column
+        if solveSudoku(comparatorsGrid, grid, row, col + 1):
+            return True
 
-            # Removing the assigned num ,
-            # since our assumption
-            # was wrong , and we go for
-            # next assumption with
-            # diff num value
-            grid[row][col] = 0
+        # Removing the assigned num ,
+        # since our assumption
+        # was wrong , and we go for
+        # next assumption with
+        # diff num value
+        grid[row][col] = 0
     return False
 
 
@@ -170,9 +172,9 @@ comparatorsGridSize4 = [[["", "<", "<", ""], ["", "", "<", ">"], ["", ">", ">", 
                             "", ">", "<", ""], ["", "", "<", "<"]],
                         [["<", ">", "", ""], ["<", "", "", "<"], [">", "<", "", ""], [">", "", "", ">"]]]
 
-linha1 = ".<>.|.><>|..<<|.<>.|.<>>|..>>|.><.|.>>.|..<<|"
-linha2 = "<<<.|><<>|>.<>|<<<.|<>>>|>.><|>>>.|<<>>|>.>>|"
-linha3 = "><..|><.<|>..<|><..|<>.>|<..<|<>..|<<.<|<..>|"
+linha1 = ".<>.|.><>|..<<|.<>.|.<>>|..>>|.><.|.>><|..<<|"
+linha2 = "<<<.|><<>|>.<>|<<<.|<>>>|<.><|>>>.|<<><|>.>>|"
+linha3 = "><..|><.>|>..>|><..|<>.>|<..<|<>..|<<.<|<..>|"
 linha4 = ".>>.|.><<|..<<|.>>.|.<><|..>>|.<<.|.>>>|..<<|"
 linha5 = "<>>.|><<<|>.<>|<><.|<<<<|<.>>|>>>.|<>><|>.><|"
 linha6 = "<<..|>>.>|>..<|><..|>>.>|<..<|<>..|<<.<|<..>|"
@@ -182,10 +184,11 @@ linha9 = "><..|>>.>|<..<|<<..|<<.>|>..>|<<..|>>.>|<..<"
 board99ComparatorsGrid = getOperatorsGridFromString(
     linha1 + linha2 + linha3 + linha4 + linha5 + linha6 + linha7 + linha8 + linha9)
 
-
+start = time()
 if (solveSudoku(board99ComparatorsGrid, grid, 0, 0)):
     printing(grid)
 else:
     print("no solution  exists ")
-
-    # This code is contributed by sudhanshgupta2019a
+fim = time()
+print(fim - start)
+# This code is contributed by sudhanshgupta2019a
