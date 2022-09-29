@@ -1,6 +1,6 @@
 # N is the size of the 2D matrix   N*N
-N = 4
-nSqrt = 2
+N = 9
+nSqrt = 3
 # A utility function to print grid
 
 
@@ -135,14 +135,54 @@ def solveSudoku(comparatorsGrid, grid, row, col):
 def getGridFromString(string):
   grid = [None] * N
   for i in range(len(string)):
-    row = i // 4
+    print(grid)
+    row = i // 4 
+    column = i % N
     if grid[row] == None:
-      grid[row] = []
+      grid[row] = [[]]
 
     if string[i] == ".": 
-      grid[row].append("")
+      grid[row][column].append("")
     else:
-      grid[row].append(string[i])
+      grid[row][column].append(string[i])
+  
+  print(grid)
+  return grid
+
+# Driver Code
+def getGridFromString(string):
+  grid = [None] * N
+  for i in range(len(string)):
+    print(grid)
+    row = i // 4 // N
+    column = i % N
+    if grid[row] == None:
+      grid[row] = [[]]
+
+    if string[i] == ".": 
+      grid[row][column].append("")
+    else:
+      grid[row][column].append(string[i])
+  
+  print(grid)
+  return grid
+
+# Driver Code
+def getGridFromString2(rows: str):
+  operators = rows.split()
+
+  grid = [None] * N
+  for i in range(len(string)):
+    print(grid)
+    row = i // 4 
+    column = i % N
+    if grid[row] == None:
+      grid[row] = [[]]
+
+    if string[i] == ".": 
+      grid[row][column].append("")
+    else:
+      grid[row][column].append(string[i])
   
   print(grid)
   return grid
@@ -158,13 +198,23 @@ comparatorsGridSize4 = [[["", "<", "<", ""], ["", "", "<", ">"], ["", ">", ">", 
                         [["", "<", ">", ""], ["", "", ">", ">"], ["", ">", "<", ""], ["", "", "<", "<"]], 
                         [["<", ">", "", ""], ["<", "", "", "<"], [">", "<", "", ""], [">", "", "", ">"]]]
 
-<<<<<<< HEAD
-comparatorsStringSize9 = ".<>..><>.<<.<>..<>>..>>.><..>><..<<<<<.<<<>>.<><<<.<>>><.><>>>.<<><>.>>"
-=======
-comparatorsStringSize9 = ""
->>>>>>> 3e16d56dcbaf83645b7e21fa472c95833e0c4328
+linha1 = ".<>.|.><>|..<<|.<>.|.<>>|..>>|.><.|.>>.|..<<"
+linha2 = "<<<.|><<>|>.<>|<<<.|<>>>|>.><|>>>.|<<>>|>.>>"
+linha3 = "><..|><.<|>..<|><..|<>.>|<..<|<>..|<<.<|<..>"
+linha4 = ".>>.|.><<|..<<|.>>.|.<><|..>>|.<<.|.>>>|..<<"
+linha5 = "<>>.|><<<|>.<>|<><.|<<<<|<.>>|>>>.|<>><|>.><"
+linha6 = "<<..|>>.>|>..<|><..|>>.>|<..<|<>..|<<.<|<..>"
+linha7 = ".<>.|.>>>|..><|.><.|.>><|..><|.<<.|.><>|..<<"
+linha8 = "<><.|<<<<|<.>>|>>>.|<<><|<.<>|><>.|><<>|>.>>"
+linha9 = "><..|>>.>|<..<|<<..|<<.>|>..>|<<..|>>.>|<..<"
 
-if (solveSudoku(comparatorsGridSize4, grid, 0, 0)):
+gridString = linha1 + linha2 + linha3 + linha4+ linha5 + linha6 + linha7 + linha8 + linha9
+# gridList = getGridFromString2(gridString)
+gridString = gridString.replace("|", "")
+print(len(gridString))
+gridList = getGridFromString(gridString)
+
+if (solveSudoku(gridList, grid, 0, 0)):
     printing(grid)
 else:
     print("no solution  exists ")
