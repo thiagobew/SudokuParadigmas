@@ -1,4 +1,4 @@
-module Dataset (allRows, getComparatorsGrid) where
+module Dataset (getComparatorsGrid) where
   import Config ( sudokuSize )
   row1 :: [Char]
   row2 :: [Char]
@@ -19,8 +19,8 @@ module Dataset (allRows, getComparatorsGrid) where
   row8 = "<><.|<<<<|<.>>|>>>.|<<><|<.<>|><>.|><<>|>.>>|"
   row9 = "><..|>>.>|<..<|<<..|<<.>|>..>|<<..|>>.>|<..<|"
 
-  allRows :: [[Char]]
-  allRows = [row1, row2, row3, row4, row5, row6, row7, row8, row9]
+  allRowsSize9 :: [[Char]]
+  allRowsSize9 = [row1, row2, row3, row4, row5, row6, row7, row8, row9]
 
   takePipeOut :: [Char] -> [Char]
   takePipeOut [] = []
@@ -33,4 +33,4 @@ module Dataset (allRows, getComparatorsGrid) where
                                           row = takePipeOut rawRow
 
   getComparatorsGrid :: [[[Char]]]
-  getComparatorsGrid = map (`takeAllComparatorsFromRow` sudokuSize) allRows
+  getComparatorsGrid = map (`takeAllComparatorsFromRow` sudokuSize) allRowsSize9
