@@ -1,8 +1,8 @@
 import Dataset
 import Config ( sudokuSize )
-import Sudoku ( getSudokuGrid )
+import Sudoku ( getSudokuGrid, solveSudoku )
 
 
 -- Testing List
 main = do
-  print (getSudokuGrid sudokuSize)
+  print (solveSudoku (getSudokuGrid sudokuSize) getComparatorsGrid 0 0)

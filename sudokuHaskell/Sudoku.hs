@@ -1,55 +1,49 @@
 module Sudoku where
 import Config
-import Data.Typeable
 
-isInt :: (Typeable a) => a -> Bool
-isInt n = typeOf n == typeRep (Proxy :: Proxy Int)
+getXY :: Maybe [[a]] -> Int -> Int -> a
+getXY Nothing _ _ = error "getXY: Nothing"
+getXY (Just grid) x y = (grid !! y) !! x
 
-data Cell = Fixed !Int | Possible ![Int] deriving Show
-type Row = [[Int]]
+setXY :: Maybe [[a]] -> Int -> Int -> a -> Maybe [[a]]
+setXY Nothing _ _ _ = error "setXY: Nothing"
+setXY (Just grid) x y val = Just (take y grid ++ [take x (grid !! y) ++ [val] ++ drop (x+1) (grid !! y)] ++ drop (y+1) grid)
 
-cellToInt :: Cell -> [Int]
-cellToInt (Possible xs) = xs
+getSudokuGrid :: Int -> Maybe [[Int]]
+getSudokuGrid sudokuSize = Just (replicate sudokuSize (replicate sudokuSize 0))
 
-getXY :: [[a]] -> Int -> Int -> a
-getXY grid x y = (grid !! y) !! x
+getRow :: Maybe [[Int]] -> Int -> Int -> [Int]
+getRow Nothing _ _ = []
+getRow (Just grid) x y = grid !! x
 
-setXY :: [[a]] -> Int -> Int -> a -> [[a]]
-setXY grid x y val = take y grid ++ [take x (grid !! y) ++ [val] ++ drop (x+1) (grid !! y)] ++ drop (y+1) grid
+getCol :: Maybe [[Int]] -> Int -> Int -> [Int]
+getCol Nothing _ _ = []
+getCol (Just grid) x y = map (!! y) grid
 
-getSudokuGrid :: Int -> [[Cell]]
-getSudokuGrid sudokuSize = replicate sudokuSize (replicate sudokuSize (Possible [1..sudokuSize]))
+getSquare :: Maybe [[a]] -> Int -> Int -> Int -> [a]
+getSquare Nothing _ _ _ = []
+getSquare (Just grid) x y sudokuSize = [getXY (Just grid) (x + i) (y + j) | i <- [0..sudokuSize-1], j <- [0..sudokuSize-1]]
 
-getRow :: [[Cell]] -> Int -> Int -> Row
-getRow grid x y = map cellToInt (grid !! x)
-
-getCol :: [[Cell]] -> Int -> Int -> Row
-getCol grid x y = map cellToInt (map (!! y) grid)
-
-getSquare :: [[a]] -> Int -> Int -> Int -> [a]
-getSquare grid x y sudokuSize = map (\(x',y') -> getXY grid x' y') [(x',y') | x' <- [x..x+sudokuSize-1], y' <- [y..y+sudokuSize-1]]
-
-getPossibleOptions :: [[Cell]] -> [[[Char]]] -> Int -> Int -> Cell -> Cell
-getPossibleOptions sudokuGrid sudokuGridChars x y value = case value of
-    Fixed n -> Fixed n
-    Possible options -> Possible (filter (\n -> n `notElem` (getRow sudokuGrid x y ++ getCol sudokuGrid x y ++ getSquare sudokuGrid (x - x `mod` sudokuSize) (y - y `mod` sudokuSize) sudokuSize)) options)
-
-getPossibleOptions2 :: [[Cell]] -> [[[Char]]] -> Int -> Int -> Cell -> Cell
-getPossibleOptions2 sudokuGrid sudokuGridChars x y value = case value of
-    Fixed n -> Fixed n
-    Possible options -> Possible ([a | a <- options, inRow a, inCol a, inSqr a])
+getPossibleOptions :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> [Int]
+getPossibleOptions sudokuGrid sudokuGridChars x y = [a | a <- [1..sudokuSize], notInRow a, notInCol a, notInSquare a]
     where
-      inRow = not . (`elem` getRow sudokuGrid x y)
-      inCol = not . (`elem` getCol sudokuGrid x y)
-      inSqr = not . (`elem` getSquare sudokuGrid (x - x `mod` sudokuSize) (y - y `mod` sudokuSize) sudokuSize)
+        notInRow a = a `notElem` getRow sudokuGrid x y
+        notInCol a = a `notElem` getCol sudokuGrid x y
+        notInSquare a = a `notElem` getSquare sudokuGrid x y sudokuSize
 
-iteratePossibleOptions :: Cell -> [[Cell]] -> [[[Char]]] -> Int -> Int -> [[Cell]]
-iteratePossibleOptions (Fixed n) sudokuGrid sudokuGridChars x y = sudokuGrid
-iteratePossibleOptions (Possible options) sudokuGrid sudokuGridChars x y = if length options == 1 then setXY sudokuGrid x y (Fixed (head options)) else sudokuGrid
+--iteratePossibleOptions :: [[Int]] -> [[[Char]]] -> Int -> Int -> [[Int]]
+--iteratePossibleOptions sudokuGrid sudokuGridChars x y = [setXY sudokuGrid x y a | a <- getPossibleOptions sudokuGrid sudokuGridChars x y]
 
-solveSudoku :: [[Cell]] -> [[[Char]]] -> Int -> Int -> [[Cell]]
+isInvalidSudoku :: Maybe [[Int]] -> [[[Char]]] -> Bool
+isInvalidSudoku sudokuGrid sudokuGridChars = any (==False) [(getXY sudokuGrid x y) == 0 || (getXY sudokuGrid x y) `elem` getPossibleOptions sudokuGrid sudokuGridChars x y | x <- [1..sudokuSize], y <- [1..sudokuSize]]
+
+solveSudoku :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> Maybe [[Int]]
 solveSudoku sudokuGrid comparatorsGrid row column
   | row == (sudokuSize - 1) && column == sudokuSize = sudokuGrid
   | column == sudokuSize = solveSudoku sudokuGrid comparatorsGrid (row + 1) 0
-  | isInt (getXY sudokuGrid row column) = solveSudoku sudokuGrid comparatorsGrid row (column + 1)
-  | otherwise = solveSudoku (iteratePossibleOptions (getXY sudokuGrid row column) sudokuGrid comparatorsGrid row column) comparatorsGrid row (column + 1)
+  | getXY sudokuGrid row column > 0 = solveSudoku sudokuGrid comparatorsGrid row (column + 1)
+  | isInvalidSudoku sudokuGrid comparatorsGrid = Nothing
+  | otherwise =
+    case solveSudoku (setXY sudokuGrid row column (head (getPossibleOptions sudokuGrid comparatorsGrid row column))) comparatorsGrid row (column + 1) of
+      Nothing -> setXY sudokuGrid row column 0
+      Just n -> Just n 
