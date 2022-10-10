@@ -1,8 +1,8 @@
 import Dataset
 import Config ( sudokuSize )
 import Sudoku ( getSudokuGrid, solveSudoku )
+import Printer (printMatrix)
 
 
--- Testing List
 main = do
   print (solveSudoku (getSudokuGrid sudokuSize) getComparatorsGrid 0 0)

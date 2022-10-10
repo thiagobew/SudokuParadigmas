@@ -1,8 +1,8 @@
 module Sudoku where
-import Config
 import Control.Monad.Writer (runWriter, Writer)
 import Data.Maybe (fromMaybe)
 import Debug.Trace (trace)
+import Config (nSquare, sudokuSize)
 
 getXY :: Show a => Maybe [[a]] -> Int -> Int -> a
 getXY Nothing _ _ = error "getXY: Nothing"
@@ -26,18 +26,18 @@ getCol (Just grid) x y = map (!! y) grid
 
 getSquare :: Show a => Maybe [[a]] -> Int -> Int -> Int -> [a]
 getSquare Nothing _ _ _ = []
-getSquare (Just grid) x y sudokuSize = [getXY (Just grid) (x + i) (y + j) | i <- [0..sudokuSize-1], j <- [0..sudokuSize-1]]
+getSquare (Just grid) x y sudokuSize =
+  [getXY (Just grid) i j | i <- [startRow..startRow + nSquare - 1], j <- [startColumn..startColumn + nSquare - 1]]
+    where 
+      startRow = x - x `mod` nSquare
+      startColumn = y - y `mod` nSquare
 
 getPossibleOptions :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> [Int]
--- getPossibleOptions sudokuGrid sudokuGridChars x y = [a | a <- [1..sudokuSize], notInRow a, notInCol a, notInSquare a]
-getPossibleOptions sudokuGrid sudokuGridChars x y = [a | a <- [1..sudokuSize], notInRow a, notInCol a]
+getPossibleOptions sudokuGrid sudokuGridChars x y = [a | a <- [1..sudokuSize], notInRow a, notInCol a, notInSquare a]
     where
         notInRow a = a `notElem` getRow sudokuGrid x y
         notInCol a = a `notElem` getCol sudokuGrid x y
-        -- notInSquare a = a `notElem` getSquare sudokuGrid x y sudokuSize
-
-isInvalidSudoku :: Maybe [[Int]] -> [[[Char]]] -> Bool
-isInvalidSudoku sudokuGrid sudokuGridChars = False `elem` [getXY sudokuGrid x y == 0 || getXY sudokuGrid x y `elem` getPossibleOptions sudokuGrid sudokuGridChars x y | x <- [0..sudokuSize-1], y <- [0..sudokuSize-1]]
+        notInSquare a = a `notElem` getSquare sudokuGrid x y sudokuSize
 
 getValueInList :: [a] -> Int -> a
 getValueInList (x:xs) i
@@ -48,9 +48,9 @@ getListLength :: [a] -> Int
 getListLength [] = 0
 getListLength (_:xs) = 1 + getListLength xs
 
+
 solveSudoku :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> Maybe [[Int]]
 solveSudoku sudokuGrid comparatorsGrid row column = do
-  -- trace ("Sudoku In " ++ show row ++ ":" ++ show column) $ return()
   -- Verifica se chegou na ultima célula, retorna o tabuleiro
   if row == (sudokuSize - 1) && column == sudokuSize then trace "In the end of grid" sudokuGrid
   -- Verifica se chegou no final de uma linha, se sim passa para a próxima
@@ -58,32 +58,25 @@ solveSudoku sudokuGrid comparatorsGrid row column = do
   -- Verifica se o valor da célula atual já foi definido, se foi passa para a próxima célula
   else if getXY sudokuGrid row column > 0 then trace "Value already defined" solveSudoku sudokuGrid comparatorsGrid row (column + 1)
   else do
-      -- trace "Getting possibilities" $ return ()
       -- Pega os possíveis números para a posição atual
-      possibles <- Just (getPossibleOptions sudokuGrid comparatorsGrid row 1)
-      -- trace ("Possibles: " ++ show possibles) $ return ()
+      possibles <- Just (getPossibleOptions sudokuGrid comparatorsGrid row column)
       -- Após validar a posição e adquirir os possíveis números chama o for
       solveSudokuWithValues sudokuGrid comparatorsGrid row column possibles 0
 
 -- A partir de uma lista de possíveis números para uma posição específica testa cada um deles até terminar a lista ou algum funcionar
 solveSudokuWithValues :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> [Int] -> Int -> Maybe [[Int]]
 solveSudokuWithValues sudokuGrid comparatorsGrid row column possibles index = do
-  -- trace ("Solving " ++ show row ++ ":" ++ show column ++ " With Values: " ++ show possibles ++ " Index: " ++ show index) $ return()
   -- Verifica se o index ultrapassou o tamanho da lista, nesse caso não há solução
   if index >= getListLength possibles then Nothing
   else do
     -- Seta a grid com o valor encontrado na lista de possibilidades no index recebido
     sudokuGrid <- setXY sudokuGrid row column (getValueInList possibles index)
-    -- trace (show sudokuGrid) $ return ()
     -- Continua o fluxo para a próxima célula e verifica o retorno
     case solveSudoku (Just sudokuGrid) comparatorsGrid row (column + 1) of
       -- Caso seja Nothing, não houve solução irá resetar o valor e tentar o próximo da lista de possibilidades
       Nothing -> do 
-        -- trace ("Resseting Row: " ++ show row ++ " Column: " ++ show column) $ return () 
         setXY (Just sudokuGrid) row column 0
         solveSudokuWithValues (Just sudokuGrid) comparatorsGrid row column possibles (index + 1)
       -- Caso seja um tabuleiro é pq houve solução, então retorna a solução
-      Just n -> do
-        -- trace "Solution found" $ return ()
-        Just n
+      Just n -> Just n
   
