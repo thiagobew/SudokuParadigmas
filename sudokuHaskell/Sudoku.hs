@@ -1,9 +1,13 @@
 module Sudoku where
 import Config
+import Control.Monad.Writer (runWriter, Writer)
+import Data.Maybe (fromMaybe)
+import Debug.Trace (trace)
 
-getXY :: Maybe [[a]] -> Int -> Int -> a
+getXY :: Show a => Maybe [[a]] -> Int -> Int -> a
 getXY Nothing _ _ = error "getXY: Nothing"
-getXY (Just grid) x y = (grid !! y) !! x
+getXY (Just grid) x y = trace ("getXY: " ++ show x ++ " " ++ show y ++ " " ++ show ((grid !! x )!! y)) $ grid !! x !! y
+-- getXY (Just grid) x y = grid !! x !! y
 
 setXY :: Maybe [[a]] -> Int -> Int -> a -> Maybe [[a]]
 setXY Nothing _ _ _ = error "setXY: Nothing"
@@ -20,7 +24,7 @@ getCol :: Maybe [[Int]] -> Int -> Int -> [Int]
 getCol Nothing _ _ = []
 getCol (Just grid) x y = map (!! y) grid
 
-getSquare :: Maybe [[a]] -> Int -> Int -> Int -> [a]
+getSquare :: Show a => Maybe [[a]] -> Int -> Int -> Int -> [a]
 getSquare Nothing _ _ _ = []
 getSquare (Just grid) x y sudokuSize = [getXY (Just grid) (x + i) (y + j) | i <- [0..sudokuSize-1], j <- [0..sudokuSize-1]]
 
@@ -31,19 +35,18 @@ getPossibleOptions sudokuGrid sudokuGridChars x y = [a | a <- [1..sudokuSize], n
         notInCol a = a `notElem` getCol sudokuGrid x y
         notInSquare a = a `notElem` getSquare sudokuGrid x y sudokuSize
 
---iteratePossibleOptions :: [[Int]] -> [[[Char]]] -> Int -> Int -> [[Int]]
---iteratePossibleOptions sudokuGrid sudokuGridChars x y = [setXY sudokuGrid x y a | a <- getPossibleOptions sudokuGrid sudokuGridChars x y]
-
 isInvalidSudoku :: Maybe [[Int]] -> [[[Char]]] -> Bool
-isInvalidSudoku sudokuGrid sudokuGridChars = any (==False) [(getXY sudokuGrid x y) == 0 || (getXY sudokuGrid x y) `elem` getPossibleOptions sudokuGrid sudokuGridChars x y | x <- [1..sudokuSize], y <- [1..sudokuSize]]
+isInvalidSudoku sudokuGrid sudokuGridChars = any (==False) [(getXY sudokuGrid x y) == 0 || (getXY sudokuGrid x y) `elem` getPossibleOptions sudokuGrid sudokuGridChars x y | x <- [0..sudokuSize-1], y <- [0..sudokuSize-1]]
+
 
 solveSudoku :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> Maybe [[Int]]
-solveSudoku sudokuGrid comparatorsGrid row column
-  | row == (sudokuSize - 1) && column == sudokuSize = sudokuGrid
-  | column == sudokuSize = solveSudoku sudokuGrid comparatorsGrid (row + 1) 0
-  | getXY sudokuGrid row column > 0 = solveSudoku sudokuGrid comparatorsGrid row (column + 1)
-  | isInvalidSudoku sudokuGrid comparatorsGrid = Nothing
-  | otherwise =
-    case solveSudoku (setXY sudokuGrid row column (head (getPossibleOptions sudokuGrid comparatorsGrid row column))) comparatorsGrid row (column + 1) of
-      Nothing -> setXY sudokuGrid row column 0
-      Just n -> Just n 
+solveSudoku sudokuGrid comparatorsGrid row column = do
+  if row == (sudokuSize - 1) && column == sudokuSize then sudokuGrid
+  else if column == sudokuSize then solveSudoku sudokuGrid comparatorsGrid (row + 1) 0
+  else if getXY sudokuGrid row column > 0 then solveSudoku sudokuGrid comparatorsGrid row (column + 1)
+  -- else if isInvalidSudoku sudokuGrid comparatorsGrid then Nothing
+  else do
+      trace ("row: " ++ show row ++ " column: " ++ show column ++ ", setting: " ++ show (setXY sudokuGrid row column (head (getPossibleOptions sudokuGrid comparatorsGrid row column)))) (return ())
+      case solveSudoku (setXY sudokuGrid row column (head (getPossibleOptions sudokuGrid comparatorsGrid row column))) comparatorsGrid row (column + 1) of
+        Nothing -> setXY sudokuGrid row column 0
+        Just n -> Just n
