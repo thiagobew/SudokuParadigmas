@@ -36,17 +36,27 @@ getPossibleOptions sudokuGrid sudokuGridChars x y = [a | a <- [1..sudokuSize], n
         notInSquare a = a `notElem` getSquare sudokuGrid x y sudokuSize
 
 isInvalidSudoku :: Maybe [[Int]] -> [[[Char]]] -> Bool
-isInvalidSudoku sudokuGrid sudokuGridChars = any (==False) [(getXY sudokuGrid x y) == 0 || (getXY sudokuGrid x y) `elem` getPossibleOptions sudokuGrid sudokuGridChars x y | x <- [0..sudokuSize-1], y <- [0..sudokuSize-1]]
-
+isInvalidSudoku sudokuGrid sudokuGridChars = False `elem` [getXY sudokuGrid x y == 0 || getXY sudokuGrid x y `elem` getPossibleOptions sudokuGrid sudokuGridChars x y | x <- [0..sudokuSize-1], y <- [0..sudokuSize-1]]
 
 solveSudoku :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> Maybe [[Int]]
 solveSudoku sudokuGrid comparatorsGrid row column = do
+  -- Verifica se chegou na ultima célula, retorna o tabuleiro
   if row == (sudokuSize - 1) && column == sudokuSize then sudokuGrid
+  -- Verifica se chegou no final de uma linha, se sim passa para a próxima
   else if column == sudokuSize then solveSudoku sudokuGrid comparatorsGrid (row + 1) 0
+  -- Verifica se o valor da célula atual já foi definido, se foi passa para a próxima célula
   else if getXY sudokuGrid row column > 0 then solveSudoku sudokuGrid comparatorsGrid row (column + 1)
   -- else if isInvalidSudoku sudokuGrid comparatorsGrid then Nothing
+  -- Caso passe pelas validações, executa, para cada um dos possíveis números:
+  -- -> Seta o número na célula atual e passa para a próxima célula
+  -- -> Mantém o controle do retorno do fluxo que partiu da célula, se houve problema reseta a célula atual e retorna Nothing  
   else do
-      trace ("row: " ++ show row ++ " column: " ++ show column ++ ", setting: " ++ show (setXY sudokuGrid row column (head (getPossibleOptions sudokuGrid comparatorsGrid row column)))) (return ())
-      case solveSudoku (setXY sudokuGrid row column (head (getPossibleOptions sudokuGrid comparatorsGrid row column))) comparatorsGrid row (column + 1) of
+      -- Pega os possíveis números para a posição atual
+      possibles <- Just (getPossibleOptions sudokuGrid comparatorsGrid row column)
+      -- Altera o tabuleiro setando o primeiro valor
+      gridSetada <- setXY sudokuGrid row column (head possibles)
+      -- trace ("row: " ++ show row ++ " column: " ++ show column ++ ", setting: " ++ show (setXY sudokuGrid row column (head (getPossibleOptions sudokuGrid comparatorsGrid row column)))) (return ())
+      case solveSudoku (Just gridSetada) comparatorsGrid row (column + 1) of
         Nothing -> setXY sudokuGrid row column 0
         Just n -> Just n
+  
