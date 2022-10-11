@@ -1,5 +1,6 @@
 module Dataset (getComparatorsGrid) where
   import Config ( sudokuSize )
+  import Debug.Trace (trace)
   row1 :: [Char]
   row2 :: [Char]
   row3 :: [Char]
@@ -28,7 +29,7 @@ module Dataset (getComparatorsGrid) where
 
   takeAllComparatorsFromRow :: [Char] -> Int -> [[Char]]
   takeAllComparatorsFromRow [] _ = []
-  takeAllComparatorsFromRow rawRow n = take 4 row : takeAllComparatorsFromRow (drop (sudokuSize-n) row) (n-1)
+  takeAllComparatorsFromRow rawRow n = take 4 row : takeAllComparatorsFromRow (drop 4 row) (n-1)
                                         where
                                           row = takePipeOut rawRow
 

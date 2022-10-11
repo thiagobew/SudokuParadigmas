@@ -28,29 +28,56 @@ getSquare :: Show a => Maybe [[a]] -> Int -> Int -> Int -> [a]
 getSquare Nothing _ _ _ = []
 getSquare (Just grid) x y sudokuSize =
   [getXY (Just grid) i j | i <- [startRow..startRow + nSquare - 1], j <- [startColumn..startColumn + nSquare - 1]]
-    where 
+    where
       startRow = x - x `mod` nSquare
       startColumn = y - y `mod` nSquare
 
-compareBigger :: Maybe [[Int]] -> Int -> Int -> Bool
+compareBigger :: Maybe [[Int]] -> Int -> Int -> Int -> Int -> Bool
+compareBigger Nothing _ _ _ _ = False
+compareBigger (Just grid) x y value 0 = value > (getXY (Just grid) (x-1) y) || (getXY (Just grid) (x-1) y) == 0
+compareBigger (Just grid) x y value 1 = value > (getXY (Just grid) x (y+1)) || (getXY (Just grid) x (y+1)) == 0
+compareBigger (Just grid) x y value 2 = value > (getXY (Just grid) (x+1) y) || (getXY (Just grid) (x+1) y) == 0
+compareBigger (Just grid) x y value 3 = value > (getXY (Just grid) x (y-1)) || (getXY (Just grid) x (y-1)) == 0
+compareBigger (Just grid) x y value n
+  | n < 0 || n > 3 = error "compareBigger: n is not in range 0..3"
+  | otherwise = compareBigger (Just grid) x y value n
 
-executeComparison :: Maybe [[Int]] -> Char -> Int -> Int -> Bool
-executeComparison sudokuGrid comparator value operatorType
+compareSmaller :: Maybe [[Int]] -> Int -> Int -> Int -> Int -> Bool
+compareSmaller Nothing _ _ _ _ = False
+compareSmaller (Just grid) x y value 0 = value < (getXY (Just grid) (x-1) y) || (getXY (Just grid) (x-1) y) == 0
+compareSmaller (Just grid) x y value 1 = value < (getXY (Just grid) x (y+1)) || (getXY (Just grid) x (y+1)) == 0
+compareSmaller (Just grid) x y value 2 = value < (getXY (Just grid) (x+1) y) || (getXY (Just grid) (x+1) y) == 0
+compareSmaller (Just grid) x y value 3 = value < (getXY (Just grid) x (y-1)) || (getXY (Just grid) x (y-1)) == 0
+compareSmaller (Just grid) x y value n
+  | n < 0 || n > 3 = error "compareSmaller: n is not in range 0..3"
+  | otherwise = compareSmaller (Just grid) x y value n
+
+indexOf :: Eq a => a -> [a] -> Int
+indexOf _ [] = error "indexOf: empty list"
+indexOf x (y:ys) = if x == y then 0 else 1 + indexOf x ys
+
+-- trace (show x ++ " " ++ show y ++ " " ++ show operatorType ++ show comparator) $
+
+executeComparison :: Maybe [[Int]] -> Char -> Int -> Int -> Int -> Int -> Bool
+executeComparison sudokuGrid comparator x y value operatorType
   | comparator == '.' = True
-  | comparator == '>' = compareBigger sudokuGrid value operatorType
+  | comparator == '>' = compareBigger sudokuGrid x y value operatorType
+  | comparator == '<' = compareSmaller sudokuGrid x y value operatorType
+  | otherwise = error "executeComparison: Invalid comparator"
 
 getCompare :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> [Int]
 getCompare sudokuGrid comparatorsGrid x y = [a | a <- [1..sudokuSize], canFitComparators a]
   where
-    n = -1
-    canFitComparators a = any (==False) [executeComparison sudokuGrid x a (n + 1) | x <- getXY (Just comparatorsGrid) x y]
+    comparators = getXY (Just comparatorsGrid) x y
+    canFitComparators a = all (==True) [executeComparison sudokuGrid u x y a (indexOf u comparators) | u <- comparators]
 
 getPossibleOptions :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> [Int]
-getPossibleOptions sudokuGrid sudokuGridChars x y = [a | a <- [1..sudokuSize], notInRow a, notInCol a, notInSquare a]
+getPossibleOptions sudokuGrid sudokuGridChars x y = [a | a <- [1..sudokuSize], notInRow a, notInCol a, notInSquare a, inCompareOptions a]
     where
         notInRow a = a `notElem` getRow sudokuGrid x y
         notInCol a = a `notElem` getCol sudokuGrid x y
         notInSquare a = a `notElem` getSquare sudokuGrid x y sudokuSize
+        inCompareOptions a = a `elem` getCompare sudokuGrid sudokuGridChars x y
 
 getValueInList :: [a] -> Int -> a
 getValueInList [] _ = error "getValueInList: index too large"
@@ -88,9 +115,8 @@ solveSudokuWithValues sudokuGrid comparatorsGrid row column possibles index = do
     -- Continua o fluxo para a próxima célula e verifica o retorno
     case solveSudoku (Just sudokuGrid) comparatorsGrid row (column + 1) of
       -- Caso seja Nothing, não houve solução irá resetar o valor e tentar o próximo da lista de possibilidades
-      Nothing -> do 
+      Nothing -> do
         setXY (Just sudokuGrid) row column 0
         solveSudokuWithValues (Just sudokuGrid) comparatorsGrid row column possibles (index + 1)
       -- Caso seja um tabuleiro é pq houve solução, então retorna a solução
       Just n -> Just n
-  
