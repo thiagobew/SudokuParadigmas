@@ -32,6 +32,19 @@ getSquare (Just grid) x y sudokuSize =
       startRow = x - x `mod` nSquare
       startColumn = y - y `mod` nSquare
 
+compareBigger :: Maybe [[Int]] -> Int -> Int -> Bool
+
+executeComparison :: Maybe [[Int]] -> Char -> Int -> Int -> Bool
+executeComparison sudokuGrid comparator value operatorType
+  | comparator == '.' = True
+  | comparator == '>' = compareBigger sudokuGrid value operatorType
+
+getCompare :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> [Int]
+getCompare sudokuGrid comparatorsGrid x y = [a | a <- [1..sudokuSize], canFitComparators a]
+  where
+    n = -1
+    canFitComparators a = any (==False) [executeComparison sudokuGrid x a (n + 1) | x <- getXY (Just comparatorsGrid) x y]
+
 getPossibleOptions :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> [Int]
 getPossibleOptions sudokuGrid sudokuGridChars x y = [a | a <- [1..sudokuSize], notInRow a, notInCol a, notInSquare a]
     where
@@ -40,6 +53,7 @@ getPossibleOptions sudokuGrid sudokuGridChars x y = [a | a <- [1..sudokuSize], n
         notInSquare a = a `notElem` getSquare sudokuGrid x y sudokuSize
 
 getValueInList :: [a] -> Int -> a
+getValueInList [] _ = error "getValueInList: index too large"
 getValueInList (x:xs) i
   | i == 0 = x
   | otherwise = getValueInList xs (i - 1)
