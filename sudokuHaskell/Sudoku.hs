@@ -6,7 +6,6 @@ import Config (nSquare, sudokuSize)
 
 getXY :: Show a => Maybe [[a]] -> Int -> Int -> a
 getXY Nothing _ _ = error "getXY: Nothing"
--- getXY (Just grid) x y = trace ("getXY: " ++ show x ++ " " ++ show y ++ " " ++ show ((grid !! x )!! y)) $ grid !! x !! y
 getXY (Just grid) x y = grid !! x !! y
 
 setXY :: Maybe [[a]] -> Int -> Int -> a -> Maybe [[a]]
@@ -34,42 +33,36 @@ getSquare (Just grid) x y sudokuSize =
 
 compareBigger :: Maybe [[Int]] -> Int -> Int -> Int -> Int -> Bool
 compareBigger Nothing _ _ _ _ = False
-compareBigger (Just grid) x y value 0 = value > (getXY (Just grid) (x-1) y) || (getXY (Just grid) (x-1) y) == 0
-compareBigger (Just grid) x y value 1 = value > (getXY (Just grid) x (y+1)) || (getXY (Just grid) x (y+1)) == 0
-compareBigger (Just grid) x y value 2 = value > (getXY (Just grid) (x+1) y) || (getXY (Just grid) (x+1) y) == 0
-compareBigger (Just grid) x y value 3 = value > (getXY (Just grid) x (y-1)) || (getXY (Just grid) x (y-1)) == 0
+compareBigger (Just grid) x y value 0 = value > getXY (Just grid) (x-1) y || getXY (Just grid) (x-1) y == 0
+compareBigger (Just grid) x y value 1 = value > getXY (Just grid) x (y+1) || getXY (Just grid) x (y+1) == 0
+compareBigger (Just grid) x y value 2 = value > getXY (Just grid) (x+1) y || getXY (Just grid) (x+1) y == 0
+compareBigger (Just grid) x y value 3 = value > getXY (Just grid) x (y-1) || getXY (Just grid) x (y-1) == 0
 compareBigger (Just grid) x y value n
   | n < 0 || n > 3 = error "compareBigger: n is not in range 0..3"
   | otherwise = compareBigger (Just grid) x y value n
 
 compareSmaller :: Maybe [[Int]] -> Int -> Int -> Int -> Int -> Bool
 compareSmaller Nothing _ _ _ _ = False
-compareSmaller (Just grid) x y value 0 = value < (getXY (Just grid) (x-1) y) || (getXY (Just grid) (x-1) y) == 0
-compareSmaller (Just grid) x y value 1 = value < (getXY (Just grid) x (y+1)) || (getXY (Just grid) x (y+1)) == 0
-compareSmaller (Just grid) x y value 2 = value < (getXY (Just grid) (x+1) y) || (getXY (Just grid) (x+1) y) == 0
-compareSmaller (Just grid) x y value 3 = value < (getXY (Just grid) x (y-1)) || (getXY (Just grid) x (y-1)) == 0
+compareSmaller (Just grid) x y value 0 = value < getXY (Just grid) (x-1) y || getXY (Just grid) (x-1) y == 0
+compareSmaller (Just grid) x y value 1 = value < getXY (Just grid) x (y+1) || getXY (Just grid) x (y+1) == 0
+compareSmaller (Just grid) x y value 2 = value < getXY (Just grid) (x+1) y || getXY (Just grid) (x+1) y == 0
+compareSmaller (Just grid) x y value 3 = value < getXY (Just grid) x (y-1) || getXY (Just grid) x (y-1) == 0
 compareSmaller (Just grid) x y value n
   | n < 0 || n > 3 = error "compareSmaller: n is not in range 0..3"
   | otherwise = compareSmaller (Just grid) x y value n
 
-indexOf :: Eq a => a -> [a] -> Int
-indexOf _ [] = error "indexOf: empty list"
-indexOf x (y:ys) = if x == y then 0 else 1 + indexOf x ys
-
--- trace (show x ++ " " ++ show y ++ " " ++ show operatorType ++ show comparator) $
-
 executeComparison :: Maybe [[Int]] -> Char -> Int -> Int -> Int -> Int -> Bool
 executeComparison sudokuGrid comparator x y value operatorType
-  | comparator == '.' = True
-  | comparator == '>' = compareBigger sudokuGrid x y value operatorType
-  | comparator == '<' = compareSmaller sudokuGrid x y value operatorType
+  | comparator == '.' =  True
+  | comparator == '>' =  compareBigger sudokuGrid x y value operatorType
+  | comparator == '<' =  compareSmaller sudokuGrid x y value operatorType
   | otherwise = error "executeComparison: Invalid comparator"
 
 getCompare :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> [Int]
 getCompare sudokuGrid comparatorsGrid x y = [a | a <- [1..sudokuSize], canFitComparators a]
   where
     comparators = getXY (Just comparatorsGrid) x y
-    canFitComparators a = all (==True) [executeComparison sudokuGrid u x y a (indexOf u comparators) | u <- comparators]
+    canFitComparators a = all (==True) [executeComparison sudokuGrid (comparators !! index) x y a index | index <- [0..3]]
 
 getPossibleOptions :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> [Int]
 getPossibleOptions sudokuGrid sudokuGridChars x y = [a | a <- [1..sudokuSize], notInRow a, notInCol a, notInSquare a, inCompareOptions a]
@@ -93,9 +86,9 @@ getListLength (_:xs) = 1 + getListLength xs
 solveSudoku :: Maybe [[Int]] -> [[[Char]]] -> Int -> Int -> Maybe [[Int]]
 solveSudoku sudokuGrid comparatorsGrid row column = do
   -- Verifica se chegou na ultima célula, retorna o tabuleiro
-  if row == (sudokuSize - 1) && column == sudokuSize then trace "In the end of grid" sudokuGrid
+  if row == (sudokuSize - 1) && column == sudokuSize then trace "Found the solution: " sudokuGrid
   -- Verifica se chegou no final de uma linha, se sim passa para a próxima
-  else if column == sudokuSize then trace "Next Row" solveSudoku sudokuGrid comparatorsGrid (row + 1) 0
+  else if column == sudokuSize then solveSudoku sudokuGrid comparatorsGrid (row + 1) 0
   -- Verifica se o valor da célula atual já foi definido, se foi passa para a próxima célula
   else if getXY sudokuGrid row column > 0 then trace "Value already defined" solveSudoku sudokuGrid comparatorsGrid row (column + 1)
   else do
