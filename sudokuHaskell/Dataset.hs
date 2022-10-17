@@ -1,26 +1,38 @@
 module Dataset (getComparatorsGrid) where
   import Config ( sudokuSize )
   import Debug.Trace (trace)
-  row1 :: [Char]
-  row2 :: [Char]
-  row3 :: [Char]
-  row4 :: [Char]
-  row5 :: [Char]
-  row6 :: [Char]
-  row7 :: [Char]
-  row8 :: [Char]
-  row9 :: [Char]
-  row1 = ".<>.|.><>|..<<|.<>.|.<>>|..>>|.><.|.>><|..<<|"
-  row2 = "<<<.|><<>|>.<>|<<<.|<>>>|<.><|>>>.|<<><|>.>>|"
-  row3 = "><..|><.>|>..>|><..|<>.>|<..<|<>..|<<.<|<..>|"
-  row4 = ".>>.|.><<|..<<|.>>.|.<><|..>>|.<<.|.>>>|..<<|"
-  row5 = "<>>.|><<<|>.<>|<><.|<<<<|<.>>|>>>.|<>><|>.><|"
-  row6 = "<<..|>>.>|>..<|><..|>>.>|<..<|<>..|<<.<|<..>|"
-  row7 = ".<>.|.>>>|..><|.><.|.>><|..><|.<<.|.><>|..<<|"
-  row8 = "<><.|<<<<|<.>>|>>>.|<<><|<.<>|><>.|><<>|>.>>|"
-  row9 = "><..|>>.>|<..<|<<..|<<.>|>..>|<<..|>>.>|<..<|"
-  allRowsSize9 :: [[Char]]
-  allRowsSize9 = [row1, row2, row3, row4, row5, row6, row7, row8, row9]
+  row1size4 :: [Char]
+  row2size4 :: [Char]
+  row3size4 :: [Char]
+  row4size4 :: [Char]
+  row1size4 = ".<>.|..<>|.<<.|..>>|"
+  row2size4 = "<<..|>..>|>>..|<..<|"
+  row3size4 = ".>>.|..<<|.<<.|..>>|"
+  row4size4 = "<>..|>..<|>>..|<..<|"
+
+  row1size9 :: [Char]
+  row2size9 :: [Char]
+  row3size9 :: [Char]
+  row4size9 :: [Char]
+  row5size9 :: [Char]
+  row6size9 :: [Char]
+  row7size9 :: [Char]
+  row8size9 :: [Char]
+  row9size9 :: [Char]
+  row1size9 = ".<>.|.><>|..<<|.<>.|.<>>|..>>|.><.|.>><|..<<|"
+  row2size9 = "<<<.|><<>|>.<>|<<<.|<>>>|<.><|>>>.|<<><|>.>>|"
+  row3size9 = "><..|><.>|>..>|><..|<>.>|<..<|<>..|<<.<|<..>|"
+  row4size9 = ".>>.|.><<|..<<|.>>.|.<><|..>>|.<<.|.>>>|..<<|"
+  row5size9 = "<>>.|><<<|>.<>|<><.|<<<<|<.>>|>>>.|<>><|>.><|"
+  row6size9 = "<<..|>>.>|>..<|><..|>>.>|<..<|<>..|<<.<|<..>|"
+  row7size9 = ".<>.|.>>>|..><|.><.|.>><|..><|.<<.|.><>|..<<|"
+  row8size9 = "<><.|<<<<|<.>>|>>>.|<<><|<.<>|><>.|><<>|>.>>|"
+  row9size9 = "><..|>>.>|<..<|<<..|<<.>|>..>|<<..|>>.>|<..<|"
+  allRows :: Int -> [[Char]]
+  allRows size
+    | size == 9 = [row1size9, row2size9, row3size9, row4size9, row5size9, row6size9, row7size9, row8size9, row9size9]
+    | size == 4 = [row1size4, row2size4, row3size4, row4size4]
+    | otherwise = error "Invalid size"
 
   takePipeOut :: [Char] -> [Char]
   takePipeOut [] = []
@@ -33,4 +45,4 @@ module Dataset (getComparatorsGrid) where
                                           row = takePipeOut rawRow
 
   getComparatorsGrid :: [[[Char]]]
-  getComparatorsGrid = map takeAllComparatorsFromRow allRowsSize9
+  getComparatorsGrid = map takeAllComparatorsFromRow (allRows sudokuSize)
