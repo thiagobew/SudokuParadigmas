@@ -19,7 +19,6 @@ module Dataset (getComparatorsGrid) where
   row7 = ".<>.|.>>>|..><|.><.|.>><|..><|.<<.|.><>|..<<|"
   row8 = "<><.|<<<<|<.>>|>>>.|<<><|<.<>|><>.|><<>|>.>>|"
   row9 = "><..|>>.>|<..<|<<..|<<.>|>..>|<<..|>>.>|<..<|"
-
   allRowsSize9 :: [[Char]]
   allRowsSize9 = [row1, row2, row3, row4, row5, row6, row7, row8, row9]
 
@@ -27,11 +26,11 @@ module Dataset (getComparatorsGrid) where
   takePipeOut [] = []
   takePipeOut (x:xs) = if x /= '|' then x : takePipeOut xs else takePipeOut xs
 
-  takeAllComparatorsFromRow :: [Char] -> Int -> [[Char]]
-  takeAllComparatorsFromRow [] _ = []
-  takeAllComparatorsFromRow rawRow n = take 4 row : takeAllComparatorsFromRow (drop 4 row) (n-1)
+  takeAllComparatorsFromRow :: [Char] -> [[Char]]
+  takeAllComparatorsFromRow [] = []
+  takeAllComparatorsFromRow rawRow = take 4 row : takeAllComparatorsFromRow (drop 4 row)
                                         where
                                           row = takePipeOut rawRow
 
   getComparatorsGrid :: [[[Char]]]
-  getComparatorsGrid = map (`takeAllComparatorsFromRow` sudokuSize) allRowsSize9
+  getComparatorsGrid = map takeAllComparatorsFromRow allRowsSize9
