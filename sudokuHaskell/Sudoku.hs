@@ -6,11 +6,11 @@ import Config (nSquare, sudokuSize)
 
 getXY :: Show a => Maybe [[a]] -> Int -> Int -> a
 getXY Nothing _ _ = error "getXY: Nothing"
-getXY (Just grid) x y = grid !! x !! y
+getXY (Just grid) x y =  grid !! x !! y
 
 setXY :: Maybe [[a]] -> Int -> Int -> a -> Maybe [[a]]
 setXY Nothing _ _ _ = error "setXY: Nothing"
-setXY (Just grid) r c val = Just (take r grid ++ [take c (grid !! r) ++ [val] ++ drop (c+1) (grid !! r)] ++ drop (r+1) grid)
+setXY (Just grid) r c val = Just (take r grid ++ [take c (grid !! r) ++ [val] ++ drop (c + 1) (grid !! r)] ++ drop (r + 1) grid)
 
 getSudokuGrid :: Int -> Maybe [[Int]]
 getSudokuGrid sudokuSize = Just (replicate sudokuSize (replicate sudokuSize 0))

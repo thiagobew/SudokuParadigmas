@@ -1,6 +1,6 @@
 module Config (sudokuSize, nSquare) where
   sudokuSize :: Int
-  sudokuSize = 9
+  sudokuSize = 4
   
   nSquare :: Int
-  nSquare = 3
+  nSquare = 2
