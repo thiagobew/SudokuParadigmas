@@ -5,4 +5,4 @@ import Printer (printMatrix)
 
 
 main = do
-  print (solveSudoku (getSudokuGrid sudokuSize) getComparatorsGrid 0 0)
+  printMatrix (solveSudoku (getSudokuGrid sudokuSize) getComparatorsGrid 0 0)
