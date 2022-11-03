@@ -21,6 +21,21 @@
         ((= size 4) (list row1size4 row2size4 row3size4 row4size4)))
 )
 
+(defun takePipeOut (row)
+  (cond ((= (length row) 0) "")
+        ((= (string-ref row 0) ?|) (takePipeOut (subseq row 1)))
+        (t (concat (string (string-ref row 0)) (takePipeOut (subseq row 1))))
+  )
+)
+
+;; not sure if working, doesn't take 4 by 4 like in haskell
+(defun takeAllComparatorsFromRow(row)
+  (cond ((= (length row) 0) (list))
+        ((= (string-ref row 0) ?|) (takeAllComparatorsFromRow (subseq row 1)))
+        (t (cons (string (string-ref row 0)) (takeAllComparatorsFromRow (subseq row 1))))
+  )
+)
+
 (defun getSudokuGrid (size)
   (let ((grid (make-array (list size size) :initial-element 0))) grid)
 )
