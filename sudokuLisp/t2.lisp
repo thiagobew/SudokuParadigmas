@@ -57,10 +57,10 @@
   )
 )
 
-(defun map (f lista)
+(defun mapa (f lista)
   (if (null lista)
     ()
-    (cons (funcall f (car lista)) (map f (cdr lista)))
+    (cons (funcall f (car lista)) (mapa f (cdr lista)))
   )
 )
 
