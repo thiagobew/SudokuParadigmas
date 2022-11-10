@@ -22,12 +22,10 @@
 )
 
 (defun takePipeOut (row)
-  (cond ((= (length row) 0) "")
-        ((= (string-ref row 0) ?|) (takePipeOut (subseq row 1)))
-        (t (concat (string (string-ref row 0)) (takePipeOut (subseq row 1))))
-  )
+  (filter (lambda (x) (not (eq x #\|))) (stringToList row))
 )
 
+#|
 ;; not sure if working, doesn't take 4 by 4 like in haskell
 (defun takeAllComparatorsFromRow(row)
   (cond ((= (length row) 0) (list))
@@ -35,6 +33,11 @@
         (t (cons (string (string-ref row 0)) (takeAllComparatorsFromRow (subseq row 1))))
   )
 )
+|#
+
+;;(defun getComparatorsGrid(size)
+;; (mapa (function takeAllComparatorsFromRow) (allRows size))
+;; )
 
 (defun getSudokuGrid (size)
   (let ((grid (make-array (list size size) :initial-element 0))) grid)
@@ -62,11 +65,22 @@
   (setX l y (setX (getX l y) x value))
 )
 
+(defun stringToList (str)
+  (stringToListRecursive str 0)
+)
+
+(defun stringToListRecursive (str i)
+    (if (= (length str) i)
+      ()
+      (cons (char str i) (stringToListRecursive str (+ i 1)))
+    )
+)
+
 (defun filter (f lista)
   (if (null lista)
     ()
-    (if (funcall f (car lista))
-      (cons (car lista) (filter f (cdr lista)))
+    (if (funcall f (first lista))
+      (cons (first lista) (filter f (cdr lista)))
       (filter f (cdr lista))
     )
   )
@@ -75,12 +89,12 @@
 (defun mapa (f lista)
   (if (null lista)
     ()
-    (cons (funcall f (car lista)) (mapa f (cdr lista)))
+    (cons (funcall f (first lista)) (mapa f (cdr lista)))
   )
 )
 
 (defun main ()
-  (print (getSudokuGrid sudokuSize))
+  (print (takePipeOut row1size9))
 )
 
 (main)
