@@ -29,3 +29,21 @@
       (t ())
   )
 )
+
+(defun )
+
+(defun solveSudoku (grid comparatorsGrid row column )
+  (if (and (= row (- 1 sudokuSize) (= column sudokuSize))
+    (grid)
+    (if (= column sudokuSize)
+      (solveSudoku grid comparatorsGrid (+ 1 row) 0)
+        (if (> (getXY grid row column) 0)
+          (solveSudoku gird comparatorsGrid row (+ 1 column))
+        )
+    )
+  )
+)
+
+(defun solveSudokuWithValues (sudokuGrid comparatorsGrid row column possibles index)
+  (if (>= index (getListLength possibles)) NIL )
+)

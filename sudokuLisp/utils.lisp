@@ -41,6 +41,18 @@
   )
 )
 
+(defun getListLength (list)
+  (if (null list)
+    0
+  (+ 1 (getListLength (cdr list)))
+  )
+)
+
+(defun getValueInList (list index)
+  (if (= index 0) (car list))
+  (getValueInList list (- 1 index))
+)
+
 (defun mapa (f lista)
   (if (null lista)
     ()
