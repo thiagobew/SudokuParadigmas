@@ -48,11 +48,6 @@
   )
 )
 
-(defun getValueInList (list index)
-  (if (= index 0) (car list))
-  (getValueInList list (- 1 index))
-)
-
 (defun mapa (f lista)
   (if (null lista)
     ()
