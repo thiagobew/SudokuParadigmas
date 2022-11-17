@@ -13,8 +13,8 @@
 )
 
 (defun getXY (l x y)
-  (print (concatenate 'string "GetXY: " (write-to-string x) " " (write-to-string y)))
-  (getX (getX l y) x)
+  ;;(print (concatenate 'string "GetXY: " (write-to-string x) " " (write-to-string y)))
+  (getX (getX l x) y)
 )
 
 (defun setXY (l x y value)
@@ -68,4 +68,18 @@
 
 (defun printGrid (grid)
   (printGridRecursive grid 0)
+)
+
+(defun printComparatorsRecursive (comparators i)
+  (if (= i sudokuSize)
+    ()
+    (progn
+      (print (getX comparators i))
+      (printComparatorsRecursive comparators (+ i 1))
+    )
+  )
+)
+
+(defun printComparators (comparators)
+  (printComparatorsRecursive comparators 0)
 )
