@@ -3,7 +3,7 @@
 (load "sudoku.lisp")
 
 (defun main ()
-  (print (getComparatorsGrid sudokuSize))
+  (print (solveSudoku (getSudokuGrid) (getComparatorsGrid) 0 0))
 )
 
 (main)

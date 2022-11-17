@@ -23,20 +23,77 @@
 
 (defun executeComparison (grid row column value comparator type)
   (cond 
-      ((= comparator #\.) (true))
-      ((= comparator #\>) (compareBigger grid row column value type))
-      ((= comparator #\<) (compareSmaller grid row column value type))
+      ((eq comparator #\.) T)
+      ((eq comparator #\>) (compareBigger grid row column value type))
+      ((eq comparator #\<) (compareSmaller grid row column value type))
       (t NIL)
   )
 )
 
-(defun isPossible (grid comparatorsGrid row column))
-
-(defun getPossibleOptions (grid comparatorsGrid row column)
-  
+(defun getSquare (grid row column)
+  (progn
+  (setq squareList '())
+  (loop for i from (- row (mod row nSquare)) to (+ (- row (mod row nSquare)) nSquare) do
+    (loop for j from (- column (mod column nSquare)) to (+ (- column (mod column nSquare)) nSquare) do
+      (setq squareList (cons '(getXY grid i j) squareList))
+    )
+  )
+  squareList
+  )
 )
 
-(defun solveSudoku (grid comparatorsGrid row column )
+(defun canFitComparators (grid comparators row column value)
+  (progn
+  (setq compareList '())
+  (loop for i from 0 to 4 do
+    (setq compareList (cons (executeComparison grid row column value (getX comparators i) i) compareList))
+  )
+  (null (filter (lambda (x) (= x NIL)) compareList))
+  )
+)
+
+(defun getCompare (grid comparatorsGrid row column)
+  (progn
+  (setq compareList '())
+  (loop for i from 1 to (+ sudokuSize 1) do
+    (if (canFitComparators grid (getXY comparatorsgrid row column) row column i)
+      (setq compareList (cons 'i compareList))
+    )
+  )
+  compareList
+  )
+)
+
+(defun isPossible (grid comparatorsGrid row column value)
+  (if (not (null (member value (getX grid row))))
+    NIL
+    (if (not (null (member value (mapa (lambda (l) (getX l column)) grid))))
+      NIL
+      (if (not (null (member value (getSquare grid row column))))
+      NIL
+      (if (null (member value (getCompare grid comparatorsGrid row column)))
+        NIL
+        T      
+      )
+      )
+    )
+  )
+)
+
+
+(defun getPossibleOptions (grid comparatorsGrid row column)
+  (progn
+  (setq possiblesList '())
+  (loop for i from 1 to (+ sudokuSize 1) do
+    (if (isPossible grid comparatorsGrid row column i)
+      (setq possiblesList (cons 'i possiblesList))
+    )
+  )
+  possiblesList
+  )
+)
+
+(defun solveSudoku (grid comparatorsGrid row column)
   (cond ((and (= row (- 1 sudokuSize)) (= column sudokuSize)) grid)
         ((= column sudokuSize) (solveSudoku grid comparatorsGrid (+ row 1) 0))
         ((> (getXY grid row column) 0) (solveSudoku grid comparatorsGrid row (+ column 1)))
@@ -45,10 +102,10 @@
 )
 
 (defun solveSudokuWithValues (sudokuGrid comparatorsGrid row column possibles)
-  (for i from 0 to (length possibles)
-    (if (/= (solveSudoku (setXY sudokuGrid row column (getX possible i)) comparatorsGrid row column) NIL)
-      (setXY sudokuGrid row column (getX possible i))
+  (loop for i from 0 to (length possibles) do
+    (if (= (solveSudoku (setXY sudokuGrid row column (getX possible i)) comparatorsGrid row column) NIL)
       (setXY sudokuGrid row column 0)
+      (setXY sudokuGrid row column (getX possible i))
     )
   )
 )

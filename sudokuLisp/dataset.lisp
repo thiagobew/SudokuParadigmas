@@ -1,4 +1,5 @@
 (load "utils.lisp")
+(load "config.lisp")
 
 (defconstant row1size4 ".<>.|..<>|.<<.|..>>|")
 (defconstant row2size4 "<<..|>..>|>>..|<..<|")
@@ -35,10 +36,26 @@
   )
 )
 
-(defun getComparatorsGrid(size)
- (mapa (lambda (row) (takeAllComparatorsFromRow row 0 size)) (allRowsNoPipe size))
+(defun getComparatorsGrid ()
+ (mapa (lambda (row) (takeAllComparatorsFromRow row 0 sudokuSize)) (allRowsNoPipe sudokuSize))
 )
 
-(defun getSudokuGrid (size)
-  (let ((grid (make-array (list size size) :initial-element 0))) grid)
+(defun get0List (size)
+  (setq 0List '())
+  (progn
+    (loop for i from 0 to size do
+      (setq 0List (cons 0 0List))
+    )
+  0List
+  )
+)
+
+(defun getSudokuGrid ()
+  (progn
+  (setq grid '())
+  (loop for i from 0 to sudokuSize do
+    (setq grid (cons (get0list sudokuSize) grid))
+  )
+  grid
+  )
 )
