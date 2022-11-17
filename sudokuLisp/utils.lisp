@@ -7,7 +7,7 @@
 )
 
 (defun setX (l pos x)
-  (cond ((null l) ())
+  (cond ((null l) '())
         ((= pos 0) (cons x (cdr l)))
         (t (cons (car l) (setX (cdr l) (- pos 1) x))))
 )
@@ -18,7 +18,7 @@
 )
 
 (defun setXY (l x y value)
-  (setX l y (setX (getX l y) x value))
+  (setX l x (setX (getX l x) y value))
 )
 
 (defun stringToList (str)
@@ -81,5 +81,8 @@
 )
 
 (defun printComparators (comparators)
-  (printComparatorsRecursive comparators 0)
+  (progn
+    (printComparatorsRecursive comparators 0)
+    (print "\n")
+  )
 )
