@@ -13,6 +13,7 @@
 )
 
 (defun getXY (l x y)
+  (print (concatenate 'string "GetXY: " (write-to-string x) " " (write-to-string y)))
   (getX (getX l y) x)
 )
 
@@ -53,4 +54,18 @@
     ()
     (cons (funcall f (first lista)) (mapa f (cdr lista)))
   )
+)
+
+(defun printGridRecursive (grid i)
+  (if (= i sudokuSize)
+    ()
+    (progn
+      (print (getX grid i))
+      (printGridRecursive grid (+ i 1))
+    )
+  )
+)
+
+(defun printGrid (grid)
+  (printGridRecursive grid 0)
 )
