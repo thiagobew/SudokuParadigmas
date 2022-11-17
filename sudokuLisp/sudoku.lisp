@@ -30,6 +30,12 @@
   )
 )
 
+(defun isPossible (grid comparatorsGrid row column))
+
+(defun getPossibleOptions (grid comparatorsGrid row column)
+  
+)
+
 (defun solveSudoku (grid comparatorsGrid row column )
   (cond ((and (= row (- 1 sudokuSize)) (= column sudokuSize)) grid)
         ((= column sudokuSize) (solveSudoku grid comparatorsGrid (+ row 1) 0))
