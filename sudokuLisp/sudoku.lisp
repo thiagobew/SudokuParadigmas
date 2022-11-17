@@ -2,8 +2,9 @@
 (load "config.lisp")
 
 (defun compareBigger (grid row column value type)
+  ;;(print (concatenate 'string "compareBigger row: " (prin1-to-string row) " column: " (prin1-to-string column) " value: " (prin1-to-string value) " type: " (prin1-to-string type)))
   (cond 
-      ((= type 0) (or (> value (getXY grid (- row 1) column)) (= (getXY grid (- 1 row) column) 0)))
+      ((= type 0) (or (> value (getXY grid (- row 1) column)) (= (getXY grid (- row 1) column) 0)))
       ((= type 1) (or (> value (getXY grid row (+ column 1))) (= (getXY grid row (+ column 1)) 0)))
       ((= type 2) (or (> value (getXY grid (+ row 1) column)) (= (getXY grid (+ row 1) column) 0)))
       ((= type 3) (or (> value (getXY grid row (- column 1))) (= (getXY grid row (- column 1)) 0)))
@@ -13,7 +14,7 @@
 
 (defun compareSmaller (grid row column value type)
   (cond 
-      ((= type 0) (or (< value (getXY grid (- row 1) column)) (= (getXY grid (- 1 row) column) 0)))
+      ((= type 0) (or (< value (getXY grid (- row 1) column)) (= (getXY grid (- row 1) column) 0)))
       ((= type 1) (or (< value (getXY grid row (+ column 1))) (= (getXY grid row (+ column 1)) 0)))
       ((= type 2) (or (< value (getXY grid (+ row 1) column)) (= (getXY grid (+ row 1) column) 0)))
       ((= type 3) (or (< value (getXY grid row (- column 1))) (= (getXY grid row (- column 1)) 0)))
@@ -74,13 +75,15 @@
 )
 
 (defun isPossible (grid comparatorsGrid row column value)
-  (if (not (null (member value (getX grid row))))
+  ;;(print (find value (mapa (lambda (l) (getX l column)) grid)))
+  ;;(print (concatenate 'string (write-to-string value) " is in column? " (write-to-string (not (null (find value (mapa (lambda (l) (getX l column)) grid)))))))
+  (if (not (null (find value (getX grid row))))
     NIL
-    (if (not (null (member value (mapa (lambda (l) (getX l column)) grid))))
+    (if (not (null (find value (mapa (lambda (l) (getX l column)) grid))))
       NIL
-      (if (not (null (member value (getSquare grid row column))))
+      (if (not (null (find value (getSquare grid row column))))
       NIL
-      (if (null (member value (getCompare grid comparatorsGrid row column)))
+      (if (null (find value (getCompare grid comparatorsGrid row column)))
         NIL
         T      
       )
@@ -106,8 +109,8 @@
 )
 
 (defun solveSudoku (grid comparatorsGrid row column)
-  (printGrid grid)
-  (cond ((and (= row (- 1 sudokuSize)) (= column sudokuSize)) grid)
+  ;;(print "--------------")
+  (cond ((and (= row sudokuSize) (= column 0)) (printGrid grid))
         ((= column sudokuSize) (solveSudoku grid comparatorsGrid (+ row 1) 0))
         ((> (getXY grid row column) 0) (solveSudoku grid comparatorsGrid row (+ column 1)))
         (t (solveSudokuWithValues grid comparatorsGrid row column (getPossibleOptions grid comparatorsGrid row column) 0))
@@ -117,13 +120,10 @@
 (defun solveSudokuWithValues (sudokuGrid comparatorsGrid row column possibles index)
     (if (>= index (length possibles))
       '()
-      (progn
-        (setq newGrid (setXY sudokuGrid row column (getX possibles index)))
         ;;(print (setXY sudokuGrid row column (getX possibles index)))
-        (if (null (solveSudoku newGrid comparatorsGrid row (+ column 1)))
-          (solveSudokuWithValues newGrid comparatorsGrid row column possibles (+ index 1))
-          newGrid
+        (if (null (solveSudoku (setXY sudokuGrid row column (getX possibles index)) comparatorsGrid row (+ column 1)))
+          (solveSudokuWithValues (setXY (setXY sudokuGrid row column (getX possibles index)) row column 0) comparatorsGrid row column possibles (+ index 1))
+          (setXY sudokuGrid row column (getX possibles index))
         )
-      )    
   )
 )

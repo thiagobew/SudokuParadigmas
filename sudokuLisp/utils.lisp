@@ -42,10 +42,13 @@
   )
 )
 
-(defun getListLength (list)
-  (if (null list)
-    0
-  (+ 1 (getListLength (cdr list)))
+(defun in (value lista)
+  (if (null lista)
+    nil
+    (if (= (car lista) value)
+      t
+      (in (cdr lista) value)
+    )
   )
 )
 
@@ -81,8 +84,5 @@
 )
 
 (defun printComparators (comparators)
-  (progn
-    (printComparatorsRecursive comparators 0)
-    (print "\n")
-  )
+  (printComparatorsRecursive comparators 0)
 )
