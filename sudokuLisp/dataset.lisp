@@ -43,7 +43,7 @@
 (defun get0List (size)
   (setq 0List '())
   (progn
-    (loop for i from 0 to size do
+    (loop for i from 1 to size do
       (setq 0List (cons 0 0List))
     )
   0List
@@ -53,7 +53,7 @@
 (defun getSudokuGrid ()
   (progn
   (setq grid '())
-  (loop for i from 0 to sudokuSize do
+  (loop for i from 1 to sudokuSize do
     (setq grid (cons (get0list sudokuSize) grid))
   )
   grid
