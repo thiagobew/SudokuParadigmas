@@ -70,7 +70,10 @@
 )
 
 (defun printGrid (grid)
-  (printGridRecursive grid 0)
+  (progn
+    (printGridRecursive grid 0)
+    grid
+  )
 )
 
 (defun printComparatorsRecursive (comparators i)
