@@ -1,34 +1,19 @@
 %% sudoku.pl
 :- use_module(library(clpfd)).
 
-
-Operators = [
-    [".<>.",".><>","..<<",.<>.,".<>>","..>>",".><.",".>><","..<<"],
-    ["<<<.","><<>",">.<>","<<<.","<>>>","<.><",">>>.","<<><",">.>>"],
-    ["><..","><.>",">..>","><..","<>.>","<..<","<>..","<<.<","<..>"],
-    [".>>.",".><<","..<<",".>>.",".<><","..>>",".<<.",".>>>","..<<"],
-    ["<>>.","><<<",">.<>","<><.","<<<<","<.>>",">>>.","<>><",">.><"],
-    ["<<..",">>.>",">..<","><..",">>.>","<..<","<>..","<<.<","<..>"],
-    [".<>.",".>>>","..><",".><.",".>><","..><",".<<.",".><>","..<<"],
-    ["<><.","<<<<","<.>>",">>>.","<<><","<.<>","><>.","><<>",">.>>"],
-    ["><..",">>.>","<..<","<<..","<<.>",">..>","<<..",">>.>","<..<"]
-].
-
-Puzzle = [
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_]
-].
-
-
-sudoku() :-
+sudoku(_, Operators) :-
+      Puzzle is [
+        [_,_,_,_,_,_,_,_,_],
+        [_,_,_,_,_,_,_,_,_],
+        [_,_,_,_,_,_,_,_,_],
+        [_,_,_,_,_,_,_,_,_],
+        [_,_,_,_,_,_,_,_,_],
+        [_,_,_,_,_,_,_,_,_],
+        [_,_,_,_,_,_,_,_,_],
+        [_,_,_,_,_,_,_,_,_],
+        [_,_,_,_,_,_,_,_,_],
+        [_,_,_,_,_,_,_,_,_]
+    ],
     flatten(Puzzle, Tmp), Tmp ins 1..9,
     Rows = Puzzle,
     transpose(Rows, Columns),
@@ -90,7 +75,6 @@ verifyComparators(Puzzle, Operators) :-
     compareAtPosition(Puzzle, Operators, 4, 6),
     compareAtPosition(Puzzle, Operators, 4, 7),
     compareAtPosition(Puzzle, Operators, 4, 8),
-    compareAtPosition(Puzzle, Operators, 4, 9),
     % Sexta Linha
     compareAtPosition(Puzzle, Operators, 5, 0),
     compareAtPosition(Puzzle, Operators, 5, 1),
@@ -101,7 +85,6 @@ verifyComparators(Puzzle, Operators) :-
     compareAtPosition(Puzzle, Operators, 5, 6),
     compareAtPosition(Puzzle, Operators, 5, 7),
     compareAtPosition(Puzzle, Operators, 5, 8),
-    compareAtPosition(Puzzle, Operators, 5, 9),
     % Sétima Linha
     compareAtPosition(Puzzle, Operators, 6, 0),
     compareAtPosition(Puzzle, Operators, 6, 1),
@@ -112,7 +95,6 @@ verifyComparators(Puzzle, Operators) :-
     compareAtPosition(Puzzle, Operators, 6, 6),
     compareAtPosition(Puzzle, Operators, 6, 7),
     compareAtPosition(Puzzle, Operators, 6, 8),
-    compareAtPosition(Puzzle, Operators, 6, 9),
     % Oitáva Linha
     compareAtPosition(Puzzle, Operators, 7, 0),
     compareAtPosition(Puzzle, Operators, 7, 1),
@@ -123,7 +105,6 @@ verifyComparators(Puzzle, Operators) :-
     compareAtPosition(Puzzle, Operators, 7, 6),
     compareAtPosition(Puzzle, Operators, 7, 7),
     compareAtPosition(Puzzle, Operators, 7, 8),
-    compareAtPosition(Puzzle, Operators, 7, 9),
     % Nona Linha
     compareAtPosition(Puzzle, Operators, 8, 0),
     compareAtPosition(Puzzle, Operators, 8, 1),
@@ -133,8 +114,7 @@ verifyComparators(Puzzle, Operators) :-
     compareAtPosition(Puzzle, Operators, 8, 5),
     compareAtPosition(Puzzle, Operators, 8, 6),
     compareAtPosition(Puzzle, Operators, 8, 7),
-    compareAtPosition(Puzzle, Operators, 8, 8),
-    compareAtPosition(Puzzle, Operators, 8, 9).
+    compareAtPosition(Puzzle, Operators, 8, 8).
 
 compareAtPosition(Puzzle, Operators, RowI, ColumnI) :- 
     nth0(RowI, Operators, Row),
