@@ -2,9 +2,20 @@
 :- use_module(library(clpfd)).
 
 
-
 Operators = [
-    ["<<.<",_,_,_,_,_,_,_,_],
+    [".<>.",".><>","..<<",.<>.,".<>>","..>>",".><.",".>><","..<<"],
+    ["<<<.","><<>",">.<>","<<<.","<>>>","<.><",">>>.","<<><",">.>>"],
+    ["><..","><.>",">..>","><..","<>.>","<..<","<>..","<<.<","<..>"],
+    [".>>.",".><<","..<<",".>>.",".<><","..>>",".<<.",".>>>","..<<"],
+    ["<>>.","><<<",">.<>","<><.","<<<<","<.>>",">>>.","<>><",">.><"],
+    ["<<..",">>.>",">..<","><..",">>.>","<..<","<>..","<<.<","<..>"],
+    [".<>.",".>>>","..><",".><.",".>><","..><",".<<.",".><>","..<<"],
+    ["<><.","<<<<","<.>>",">>>.","<<><","<.<>","><>.","><<>",">.>>"],
+    ["><..",">>.>","<..<","<<..","<<.>",">..>","<<..",">>.>","<..<"]
+].
+
+Puzzle = [
+    [_,_,_,_,_,_,_,_,_],
     [_,_,_,_,_,_,_,_,_],
     [_,_,_,_,_,_,_,_,_],
     [_,_,_,_,_,_,_,_,_],
@@ -16,21 +27,8 @@ Operators = [
     [_,_,_,_,_,_,_,_,_]
 ].
 
-Empty = [
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_],
-    [_,_,_,_,_,_,_,_,_]
-].
 
-
-sudoku(Puzzle) :-
+sudoku() :-
     flatten(Puzzle, Tmp), Tmp ins 1..9,
     Rows = Puzzle,
     transpose(Rows, Columns),
@@ -38,7 +36,105 @@ sudoku(Puzzle) :-
     maplist(all_distinct, Rows),
     maplist(all_distinct, Columns),
     maplist(all_distinct, Blocks),
+    verifyComparators(Puzzle, Operators),
     maplist(label, Rows).
+
+verifyComparators(Puzzle, Operators) :-
+    % First Row
+    compareAtPosition(Puzzle, Operators, 0, 0),
+    compareAtPosition(Puzzle, Operators, 0, 1),
+    compareAtPosition(Puzzle, Operators, 0, 2),
+    compareAtPosition(Puzzle, Operators, 0, 3),
+    compareAtPosition(Puzzle, Operators, 0, 4),
+    compareAtPosition(Puzzle, Operators, 0, 5),
+    compareAtPosition(Puzzle, Operators, 0, 6),
+    compareAtPosition(Puzzle, Operators, 0, 7),
+    compareAtPosition(Puzzle, Operators, 0, 8),
+    % Second Row
+    compareAtPosition(Puzzle, Operators, 1, 0),
+    compareAtPosition(Puzzle, Operators, 1, 1),
+    compareAtPosition(Puzzle, Operators, 1, 2),
+    compareAtPosition(Puzzle, Operators, 1, 3),
+    compareAtPosition(Puzzle, Operators, 1, 4),
+    compareAtPosition(Puzzle, Operators, 1, 5),
+    compareAtPosition(Puzzle, Operators, 1, 6),
+    compareAtPosition(Puzzle, Operators, 1, 7),
+    compareAtPosition(Puzzle, Operators, 1, 8),
+    % Third Row
+    compareAtPosition(Puzzle, Operators, 2, 0),
+    compareAtPosition(Puzzle, Operators, 2, 1),
+    compareAtPosition(Puzzle, Operators, 2, 2),
+    compareAtPosition(Puzzle, Operators, 2, 3),
+    compareAtPosition(Puzzle, Operators, 2, 4),
+    compareAtPosition(Puzzle, Operators, 2, 5),
+    compareAtPosition(Puzzle, Operators, 2, 6),
+    compareAtPosition(Puzzle, Operators, 2, 7),
+    compareAtPosition(Puzzle, Operators, 2, 8),
+    % Forth Row
+    compareAtPosition(Puzzle, Operators, 3, 0),
+    compareAtPosition(Puzzle, Operators, 3, 1),
+    compareAtPosition(Puzzle, Operators, 3, 2),
+    compareAtPosition(Puzzle, Operators, 3, 3),
+    compareAtPosition(Puzzle, Operators, 3, 4),
+    compareAtPosition(Puzzle, Operators, 3, 5),
+    compareAtPosition(Puzzle, Operators, 3, 6),
+    compareAtPosition(Puzzle, Operators, 3, 7),
+    compareAtPosition(Puzzle, Operators, 3, 8),
+    % Quinta Linha
+    compareAtPosition(Puzzle, Operators, 4, 0),
+    compareAtPosition(Puzzle, Operators, 4, 1),
+    compareAtPosition(Puzzle, Operators, 4, 2),
+    compareAtPosition(Puzzle, Operators, 4, 3),
+    compareAtPosition(Puzzle, Operators, 4, 4),
+    compareAtPosition(Puzzle, Operators, 4, 5),
+    compareAtPosition(Puzzle, Operators, 4, 6),
+    compareAtPosition(Puzzle, Operators, 4, 7),
+    compareAtPosition(Puzzle, Operators, 4, 8),
+    compareAtPosition(Puzzle, Operators, 4, 9),
+    % Sexta Linha
+    compareAtPosition(Puzzle, Operators, 5, 0),
+    compareAtPosition(Puzzle, Operators, 5, 1),
+    compareAtPosition(Puzzle, Operators, 5, 2),
+    compareAtPosition(Puzzle, Operators, 5, 3),
+    compareAtPosition(Puzzle, Operators, 5, 4),
+    compareAtPosition(Puzzle, Operators, 5, 5),
+    compareAtPosition(Puzzle, Operators, 5, 6),
+    compareAtPosition(Puzzle, Operators, 5, 7),
+    compareAtPosition(Puzzle, Operators, 5, 8),
+    compareAtPosition(Puzzle, Operators, 5, 9),
+    % Sétima Linha
+    compareAtPosition(Puzzle, Operators, 6, 0),
+    compareAtPosition(Puzzle, Operators, 6, 1),
+    compareAtPosition(Puzzle, Operators, 6, 2),
+    compareAtPosition(Puzzle, Operators, 6, 3),
+    compareAtPosition(Puzzle, Operators, 6, 4),
+    compareAtPosition(Puzzle, Operators, 6, 5),
+    compareAtPosition(Puzzle, Operators, 6, 6),
+    compareAtPosition(Puzzle, Operators, 6, 7),
+    compareAtPosition(Puzzle, Operators, 6, 8),
+    compareAtPosition(Puzzle, Operators, 6, 9),
+    % Oitáva Linha
+    compareAtPosition(Puzzle, Operators, 7, 0),
+    compareAtPosition(Puzzle, Operators, 7, 1),
+    compareAtPosition(Puzzle, Operators, 7, 2),
+    compareAtPosition(Puzzle, Operators, 7, 3),
+    compareAtPosition(Puzzle, Operators, 7, 4),
+    compareAtPosition(Puzzle, Operators, 7, 5),
+    compareAtPosition(Puzzle, Operators, 7, 6),
+    compareAtPosition(Puzzle, Operators, 7, 7),
+    compareAtPosition(Puzzle, Operators, 7, 8),
+    compareAtPosition(Puzzle, Operators, 7, 9),
+    % Nona Linha
+    compareAtPosition(Puzzle, Operators, 8, 0),
+    compareAtPosition(Puzzle, Operators, 8, 1),
+    compareAtPosition(Puzzle, Operators, 8, 2),
+    compareAtPosition(Puzzle, Operators, 8, 3),
+    compareAtPosition(Puzzle, Operators, 8, 4),
+    compareAtPosition(Puzzle, Operators, 8, 5),
+    compareAtPosition(Puzzle, Operators, 8, 6),
+    compareAtPosition(Puzzle, Operators, 8, 7),
+    compareAtPosition(Puzzle, Operators, 8, 8),
+    compareAtPosition(Puzzle, Operators, 8, 9).
 
 compareAtPosition(Puzzle, Operators, RowI, ColumnI) :- 
     nth0(RowI, Operators, Row),
