@@ -42,16 +42,6 @@
   )
 )
 
-(defun in (value lista)
-  (if (null lista)
-    nil
-    (if (= (car lista) value)
-      t
-      (in (cdr lista) value)
-    )
-  )
-)
-
 (defun mapa (f lista)
   (if (null lista)
     ()
