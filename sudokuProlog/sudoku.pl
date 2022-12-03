@@ -1,15 +1,11 @@
 %% sudoku.pl
 :- use_module(library(clpfd)).
-operators(_) :- [
-    [".<>.",".><>","..<<",".<>.",".<>>","..>>",".><.",".>><","..<<"],
-    ["<<<.","><<>",">.<>","<<<.","<>>>","<.><",">>>.","<<><",">.>>"],
-    ["><..","><.>",">..>","><..","<>.>","<..<","<>..","<<.<","<..>"],
-    [".>>.",".><<","..<<",".>>.",".<><","..>>",".<<.",".>>>","..<<"],
-    ["<>>.","><<<",">.<>","<><.","<<<<","<.>>",">>>.","<>><",">.><"],
-    ["<<..",">>.>",">..<","><..",">>.>","<..<","<>..","<<.<","<..>"],
-    [".<>.",".>>>","..><",".><.",".>><","..><",".<<.",".><>","..<<"],
-    ["<><.","<<<<","<.>>",">>>.","<<><","<.<>","><>.","><<>",">.>>"],
-    ["><..",">>.>","<..<","<<..","<<.>",">..>","<<..",">>.>","<..<"]].
+
+
+operators(0, 0, '.<>.').
+
+getOperator(0, 0, Index, Char) :-
+  nth0(Index, operators(0, 0, Str), Char).    
 
 sudoku(_, Operators) :-
       Puzzle is [
@@ -146,8 +142,8 @@ compare(CharType, Char, Puzzle, RowI, ColumnI) :-
 
 compareBigger(CharType, Char, Puzzle, RowI, ColumnI) :-
     (
-        Char == '.';
-        Char == '<'
+        Char == .;
+        Char == <
     );
     nth0(RowI, Puzzle, Row),
     nth0(ColumnI, Row, N1),
@@ -170,8 +166,8 @@ compareBigger(CharType, Char, Puzzle, RowI, ColumnI) :-
 
 compareSmaller(CharType, Char, Puzzle, RowI, ColumnI) :-
     (
-        Char == '.';
-        Char == '<'
+        Char == .;
+        Char == <
     );
     nth0(RowI, Puzzle, Row),
     nth0(ColumnI, Row, N1),
