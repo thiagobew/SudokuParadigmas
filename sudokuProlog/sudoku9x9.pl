@@ -34,6 +34,16 @@ smallerSmaller(A, B, C) :-
   smaller(A, B),
   smaller(B, C).
 
+blocks([A,B,C,D,E,F,G,H,I], Blocks) :-
+  blocks(A,B,C,Block1), blocks(D,E,F,Block2), blocks(G,H,I,Block3),
+  append([Block1, Block2, Block3], Blocks).
+
+blocks([], [], [], []).
+blocks([A,B,C|Bs1],[D,E,F|Bs2],[G,H,I|Bs3], [Block|Blocks]) :-
+  Block = [A,B,C,D,E,F,G,H,I],
+  blocks(Bs1, Bs2, Bs3, Blocks).
+
+
 solve(Solution) :-
   % Problem 11 - 9x9
   Solution = [
@@ -46,6 +56,13 @@ solve(Solution) :-
     [G1, G2, G3, G4, G5, G6, G7, G8, G9], 
     [H1, H2, H3, H4, H5, H6, H7, H8, H9], 
     [I1, I2, I3, I4, I5, I6, I7, I8, I9]],
+  flatten(Solution, Tmp), Tmp ins 1..9, % All elements are between 1 and 9
+  Rows = Solution,
+  transpose(Rows, Columns),
+  blocks(Rows, Blocks),
+  maplist(all_distinct, Rows),
+  maplist(all_distinct, Columns),
+  maplist(all_distinct, Blocks), 
 
   % Solution is presented in blocks (like the ones in sudoku), starting at the top left corner
   % Block 1
@@ -55,7 +72,6 @@ solve(Solution) :-
   biggerSmaller(A1, B1, C1), % column 1
   smallerSmaller(A2, B2, C2), % column 2
   smallerSmaller(A3, B3, C3), % column 3
-  validate([A1, A2, A3, B1, B2, B3, C1, C2, C3]),
 
   % Block 2
   smallerSmaller(A4, A5, A6), % line 1
@@ -64,7 +80,6 @@ solve(Solution) :-
   biggerSmaller(A4, B4, C4), % column 4
   biggerBigger(A5, B5, C5), % column 5
   biggerBigger(A6, B6, C6), % column 6
-  validate([A4, A5, A6, B4, B5, B6, C4, C5, C6]),
 
 
   % Block 3
@@ -74,7 +89,6 @@ solve(Solution) :-
   smallerBigger(A7, B7, C7), % column 7
   biggerBigger(A8, B8, C8), % column 8
   smallerBigger(A9, B9, C9), % column 9
-  validate([A7, A8, A9, B7, B8, B9, C7, C8, C9]),
   
   % Block 4
   biggerBigger(D1, D2, D3), % line 4
@@ -83,7 +97,6 @@ solve(Solution) :-
   biggerBigger(D1, E1, F1), % column 1
   smallerSmaller(D2, E2, F2), % column 2
   smallerSmaller(D3, E3, F3), % column 3
-  validate([D1, D2, D3, E1, E2, E3, F1, F2, F3]),
 
   % Block 5
   biggerSmaller(D4, D5, D6), % line 4
@@ -92,7 +105,6 @@ solve(Solution) :-
   biggerSmaller(D4, E4, F4), % column 4
   biggerSmaller(D5, E5, F5), % column 5
   biggerBigger(D6, E6, F6), % column 6
-  validate([D4, D5, D6, E4, E5, E6, F4, F5, F6]),
 
   % Block 6
   smallerBigger(D7, D8, D9), % line 4
@@ -101,7 +113,6 @@ solve(Solution) :-
   smallerBigger(D7, E7, F7), % column 7
   biggerBigger(D8, E8, F8), % column 8
   smallerBigger(D9, E9, F9), % column 9
-  validate([D7, D8, D9, E7, E8, E9, F7, F8, F9]),
 
   % Block 7
   smallerBigger(G1, G2, G3), % line 7
@@ -110,7 +121,6 @@ solve(Solution) :-
   biggerSmaller(G1, H1, I1), % column 1
   biggerSmaller(G2, H2, I2), % column 2
   biggerBigger(G3, H3, I3), % column 3
-  validate([G1, G2, G3, H1, E2, E3, I1, I2, I3]),
 
   % Block 8
   biggerBigger(G4, G5, G6), % line 7
@@ -119,7 +129,6 @@ solve(Solution) :-
   smallerBigger(G4, H4, I4), % column 4
   biggerBigger(G5, H5, I5), % column 5
   biggerSmaller(G6, H6, I6), % column 6
-  validate([G4, G5, G6, H4, E5, E6, I4, I5, I6]),
 
   % Block 9
   smallerBigger(G7, G8, G9), % line 7
@@ -128,11 +137,5 @@ solve(Solution) :-
   smallerBigger(G7, H7, I7), % column 7
   smallerSmaller(G8, H8, I8), % column 8
   smallerBigger(G9, H9, I9), % column 9
-  validate([G7, G8, G9, H7, E8, E9, I7, I8, I9]),
 
-  % Rows constraint
-  maplist(all_distinct, Solution),
-
-  % Columns constraint
-  transpose(Solution, Columns),
-  maplist(all_distinct, Columns).
+  maplist(label, Solution), !.
