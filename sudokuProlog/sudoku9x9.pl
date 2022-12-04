@@ -1,5 +1,7 @@
 :- use_module(library(clpfd)).
 
+% Command for swipl repl: solve(Sudoku), append(Sudoku, Vs), labeling([ff], Vs).
+
 valid(A) :-
   member(A, [1, 2, 3, 4, 5, 6, 7, 8, 9]).
 
@@ -43,6 +45,11 @@ blocks([A,B,C|Bs1],[D,E,F|Bs2],[G,H,I|Bs3], [Block|Blocks]) :-
   Block = [A,B,C,D,E,F,G,H,I],
   blocks(Bs1, Bs2, Bs3, Blocks).
 
+printRow([]) :- nl.
+printRow([H|T]) :-
+  write(H),
+  write(' '),
+  printRow(T).
 
 solve(Solution) :-
   % Problem 11 - 9x9
@@ -60,9 +67,9 @@ solve(Solution) :-
   Rows = Solution,
   transpose(Rows, Columns),
   blocks(Rows, Blocks),
-  maplist(all_distinct, Rows),
-  maplist(all_distinct, Columns),
-  maplist(all_distinct, Blocks), 
+  maplist(all_different, Rows),
+  maplist(all_different, Columns),
+  maplist(all_different, Blocks), 
 
   % Solution is presented in blocks (like the ones in sudoku), starting at the top left corner
   % Block 1
@@ -138,4 +145,5 @@ solve(Solution) :-
   smallerSmaller(G8, H8, I8), % column 8
   smallerBigger(G9, H9, I9), % column 9
 
-  maplist(label, Solution), !.
+  maplist(label, Solution),
+  maplist(printRow, Solution), !.
