@@ -63,7 +63,9 @@ todosDiferentes([]).
 todosDiferentes([H|T]) :- not(member(H,T)), todosDiferentes(T).
 
 exatamenteADireita(X, Y, Lista) :-
-	aDireita(X, Y, Lista).
+	nth0(IndexX, Lista, X),
+	nth0(IndexY, Lista, Y),
+	IndexX is IndexY + 1.
 
 entre(Y, X, Z, Lista) :-
 	aEsquerda(Y, Z, Lista),
@@ -76,10 +78,10 @@ solucionar(ListaSolucao) :-
 		passageira(Nome3, Mochila3, Visitar3, Poltrona3, Musica3, Suco3),
 		passageira(Nome4, Mochila4, Visitar4, Poltrona4, Musica4, Suco4),
 		passageira(Nome5, Mochila5, Visitar5, Poltrona5, Musica5, Suco5)
-	].
+	],
 	
 	% Cintia está exatamente à direita da passageira que está bebendo suco de Limão.
-	exatamenteADireita(passageira(cintia, _, _, _, _, limao), passageira(_, _, _, _, _, limao), ListaSolucao),
+	exatamenteADireita(passageira(cintia, _, _, _, _, _), passageira(_, _, _, _, _, limao), ListaSolucao),
 
 	% A mulher de mochila Verde está em algum lugar entre a mulher que vai visitar os Pais e a passageira que sentará na poltrona 42, nessa ordem.
 	entre(passageira(_, verde, _, _, _, _), passageira(_, _, pais, _, _, _), passageira(_, _, _, 42, _, _), ListaSolucao),
@@ -128,3 +130,51 @@ solucionar(ListaSolucao) :-
 
 	% A mulher de mochila Branca está em algum lugar entre a Ana e a mulher de mochila Azul, nessa ordem.
 	entre(passageira(_, branca, _, _, _, _), passageira(ana, _, _, _, _, _), passageira(_, azul, _, _, _, _), ListaSolucao),
+
+	% A mulher que sentará na poltrona 34 está ao lado da mulher que está ouvindo Sertanejo.
+	aoLado(passageira(_, _, _, 34, _, _), passageira(_, _, _, _, sertanejo, _), ListaSolucao),
+
+	% A passageira de mochila Branca está em algum lugar à esquerda da passageira que sentará na poltrona 11.
+	aEsquerda(passageira(_, branca, _, _, _, _), passageira(_, _, _, 11, _, _), ListaSolucao),
+
+	nome(Nome1),
+	nome(Nome2),
+	nome(Nome3),
+	nome(Nome4),
+	nome(Nome5),
+	todosDiferentes([Nome1, Nome2, Nome3, Nome4, Nome5]),
+
+	mochila(Mochila1),
+	mochila(Mochila2),
+	mochila(Mochila3),
+	mochila(Mochila4),
+	mochila(Mochila5),
+	todosDiferentes([Mochila1, Mochila2, Mochila3, Mochila4, Mochila5]),
+
+	visitar(Visitar1),
+	visitar(Visitar2),
+	visitar(Visitar3),
+	visitar(Visitar4),
+	visitar(Visitar5),
+	todosDiferentes([Visitar1, Visitar2, Visitar3, Visitar4, Visitar5]),
+
+	poltrona(Poltrona1),
+	poltrona(Poltrona2),
+	poltrona(Poltrona3),
+	poltrona(Poltrona4),
+	poltrona(Poltrona5),
+	todosDiferentes([Poltrona1, Poltrona2, Poltrona3, Poltrona4, Poltrona5]),
+
+	musica(Musica1),
+	musica(Musica2),
+	musica(Musica3),
+	musica(Musica4),
+	musica(Musica5),
+	todosDiferentes([Musica1, Musica2, Musica3, Musica4, Musica5]),
+
+	suco(Suco1),
+	suco(Suco2),
+	suco(Suco3),
+	suco(Suco4),
+	suco(Suco5),
+	todosDiferentes([Suco1, Suco2, Suco3, Suco4, Suco5]).
