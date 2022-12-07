@@ -62,11 +62,13 @@ noCanto(X,[X|_]).
 todosDiferentes([]).
 todosDiferentes([H|T]) :- not(member(H,T)), todosDiferentes(T).
 
+% X exatamente à direita se seu index é + 1 em relação ao index de Y
 exatamenteADireita(X, Y, Lista) :-
 	nth0(IndexX, Lista, X),
 	nth0(IndexY, Lista, Y),
 	IndexX is IndexY + 1.
 
+% Y está entre X e Z se à direita de X e à esquerda de Z
 entre(Y, X, Z, Lista) :-
 	aEsquerda(Y, Z, Lista),
 	aEsquerda(X, Y, Lista).
