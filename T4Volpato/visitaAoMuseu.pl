@@ -1,7 +1,5 @@
 %Cinco mulheres estão lado a lado visitando um museu. Cada uma chegou num horário, utilizou um meio de transporte e gosta de um pintor.
 
-
-
 bolsa(vermelha).
 bolsa(azul).
 bolsa(amarela).
@@ -89,24 +87,20 @@ solucionar(ListaSolucao) :-
         visitante(Bolsa5, Nome5, Idade5, Pintor5, Chegada5, Transporte5)
     ],
 
-    %Na primeira posição está quem foi de Trem.
-    visitante(_,_,_,_,_,trem) = nth0(0,ListaSolucao,_),
-
     %Sabrina está em algum lugar entre a dona da bolsa Amarela e a visitante que gosta do pintor Francês, nessa ordem.
-
     entre(visitante(_,sabrina,_,_,_,_),visitante(amarela,_,_,_,_,_),visitante(_,_,_,frances,_,_),ListaSolucao),
 
+    %Na primeira posição está quem foi de Trem.
+    Transporte1 = trem,
+
     %A visitante mais velha está em algum lugar à direita da visitante da bolsa Azul.
-    
     aDireita(visitante(_,_,56,_,_,_),visitante(azul,_,_,_,_,_),ListaSolucao),
 
     %A mulher que chegou às 10:00 está ao lado da visitante que gosta do pintor Brasileiro.
-        
     aoLado(visitante(_,_,_,_,1000,_),visitante(_,_,_,brasileiro,_,_),ListaSolucao),
 
     %A visitante de 28 anos está em algum lugar entre a dona da bolsa Branca e a mulher mais nova, nessa ordem.
-            
-    entre(visitante(_,_,28,_,_,_),visitante(_,_,_,_,_,_),visitante(_,_,28,_,_,_),ListaSolucao),
+    entre(visitante(_,_,28,_,_,_),visitante(branca,_,_,_,_,_),visitante(_,_,20,_,_,_),ListaSolucao),
 
     %A dona da bolsa Azul está em algum lugar à esquerda de quem chegou às 10:30.
                     
@@ -134,7 +128,7 @@ solucionar(ListaSolucao) :-
 
     %A visitante da bolsa Verde gosta do pintor Francês.
                                                 
-    aoLado(visitante(verde,_,_,_,_,_),visitante(_,_,_,frances,_,_),ListaSolucao),   
+    member(visitante(verde,_,_,frances,_,_), ListaSolucao),   
 
     %Quem foi de Carro está ao lado de quem chegou às 10:00.
                                                         
@@ -172,7 +166,7 @@ solucionar(ListaSolucao) :-
                                                                                                                             
     member(visitante(vermelha,_,_,italiano,_,_),ListaSolucao),
 
-        %Quem chegou às 9:30 está entre quem foi de Trem e quem chegou às 9:00, nessa ordem.
+    %Quem chegou às 9:30 está entre quem foi de Trem e quem chegou às 9:00, nessa ordem.
                                                                                                                                 
     entre(visitante(_,_,_,_,930,_),visitante(_,_,_,_,_,trem),visitante(_,_,_,_,900,_),ListaSolucao),
 
